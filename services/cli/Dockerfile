@@ -1,4 +1,4 @@
-FROM rust:1.86-bookworm AS builder
+FROM rust:1.90-bookworm AS builder
 
 # hadolint ignore=DL3008
 RUN apt-get update \
