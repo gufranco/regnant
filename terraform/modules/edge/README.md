@@ -10,6 +10,7 @@ Adds caching, TLS termination, and a security-headers policy.
 
 Private zone for `var.domain_name` associated to the VPC. Three sets
 of records:
+
 - Apex `A`-alias to CloudFront
 - Subdomain `A`-aliases for each entry in `var.subdomains`
   (defaults: `api`, `console`, `edge`)
@@ -25,6 +26,7 @@ and brotli, and forwards `Authorization`, `Accept`, `Accept-Language`,
 cache key.
 
 Three policies:
+
 - A cache policy with configurable default and max TTL
 - An origin request policy that forwards every cookie, header, and
   query string to the backend
@@ -45,18 +47,18 @@ Switch to LocalStack Pro or real AWS for full caching behavior.
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Resource name prefix | `string` | required |
-| `domain_name` | Apex domain | `string` | required |
-| `subdomains` | Subdomain aliases | `list(string)` | `["api", "console", "edge"]` |
-| `vpc_id` | VPC id for the private zone | `string` | required |
-| `nlb_dns_name` | NLB DNS to alias | `string` | required |
-| `nlb_zone_id` | NLB hosted zone id | `string` | required |
-| `acm_certificate_arn` | ACM cert for the viewer | `string` | required |
-| `cache_default_ttl` | Default TTL seconds | `number` | `60` |
-| `cache_max_ttl` | Max TTL seconds | `number` | `3600` |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                  | Description                     | Type           | Default                      |
+| --------------------- | ------------------------------- | -------------- | ---------------------------- |
+| `name_prefix`         | Resource name prefix            | `string`       | required                     |
+| `domain_name`         | Apex domain                     | `string`       | required                     |
+| `subdomains`          | Subdomain aliases               | `list(string)` | `["api", "console", "edge"]` |
+| `vpc_id`              | VPC id for the private zone     | `string`       | required                     |
+| `nlb_dns_name`        | NLB DNS to alias                | `string`       | required                     |
+| `nlb_zone_id`         | NLB hosted zone id              | `string`       | required                     |
+| `acm_certificate_arn` | ACM cert for the viewer         | `string`       | required                     |
+| `cache_default_ttl`   | Default TTL seconds             | `number`       | `60`                         |
+| `cache_max_ttl`       | Max TTL seconds                 | `number`       | `3600`                       |
+| `tags`                | Tags merged into every resource | `map(string)`  | `{}`                         |
 
 ## Outputs
 

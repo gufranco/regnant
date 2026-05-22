@@ -48,7 +48,7 @@ WORKDIR /etc/envoy
 COPY --from=builder --chown=65532:65532 /opt/build/envoy /usr/local/bin/envoy
 COPY --from=builder --chown=65532:65532 /opt/build/otelcol-contrib /usr/local/bin/otelcol-contrib
 
-COPY --chown=65532:65532 ../../envoy/bootstrap.yaml.tmpl /etc/envoy/bootstrap.yaml.tmpl
+COPY --chown=65532:65532 envoy/bootstrap.yaml.tmpl /etc/envoy/bootstrap.yaml.tmpl
 
 EXPOSE 9901 10000 443
 

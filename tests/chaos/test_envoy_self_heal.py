@@ -16,14 +16,14 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 def test_envoy_kill_self_heals(envoy_url: str) -> None:
     # Arrange: choose a random Envoy.
     targets = ["envoy-1", "envoy-2", "envoy-3"]
-    victim = random.choice(targets)  # noqa: S311
+    victim = random.choice(targets)
 
     # Sanity check that the stack is up before we start killing things.
     health = httpx.get(f"{envoy_url}/health", verify=False, timeout=5.0)
     assert health.status_code in {200, 401, 403, 404, 503}
 
     # Act: kill the container.
-    subprocess.run(  # noqa: S603, S607
+    subprocess.run(
         ["docker", "compose", "kill", "-s", "SIGKILL", victim],
         check=True,
     )
@@ -39,5 +39,5 @@ def test_envoy_kill_self_heals(envoy_url: str) -> None:
     elapsed = time.monotonic() - started
 
     # Assert: NLB should re-route within 30 seconds; bring the container back.
-    subprocess.run(["docker", "compose", "up", "-d", victim], check=True)  # noqa: S603, S607
+    subprocess.run(["docker", "compose", "up", "-d", victim], check=True)
     assert elapsed < 30.0, f"recovery took {elapsed:.1f}s"

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import time
-
 import httpx
 import pytest
 from tenacity import retry, stop_after_attempt, wait_fixed

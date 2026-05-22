@@ -28,7 +28,9 @@ class Settings(BaseSettings):
     provision_queue_url: str = "http://localstack:4566/000000000000/regnant-provision-tasks"
     binding_queue_url: str = "http://localstack:4566/000000000000/regnant-binding-tasks"
 
-    otel_endpoint: str = Field(default="http://otel-collector:4317", alias="OTEL_EXPORTER_OTLP_ENDPOINT")
+    otel_endpoint: str = Field(
+        default="http://otel-collector:4317", alias="OTEL_EXPORTER_OTLP_ENDPOINT"
+    )
     otel_service_name: str = Field(default="osb-api", alias="OTEL_SERVICE_NAME")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 

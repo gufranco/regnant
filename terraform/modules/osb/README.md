@@ -22,6 +22,7 @@ bucket; OSB Workers write to it.
 ### DynamoDB tables
 
 `service_instances`:
+
 - PK `instance_id`
 - GSI `by-state` on the `state` attribute
 - TTL on the `ttl` attribute (provisioning tasks can be garbage-collected after a timeout)
@@ -29,6 +30,7 @@ bucket; OSB Workers write to it.
 - KMS-encrypted with the security module's `dynamodb` key
 
 `service_bindings`:
+
 - PK `binding_id`, sort key `instance_id`
 - GSI `by-instance` on `instance_id` (list all bindings for an instance)
 - Point-in-time recovery enabled
@@ -47,6 +49,7 @@ receive-only access to the OSB Worker role.
 
 Three inline policies attached to roles created by the security
 module:
+
 - OSB API: RW on the tables, send on the queues, read on the bucket,
   decrypt/encrypt on the relevant KMS keys
 - OSB Worker: RW on the tables, consume on the queues, RW on the
@@ -55,16 +58,16 @@ module:
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Resource name prefix | `string` | required |
-| `artifact_bucket_name` | Name of the artifact bucket | `string` | required |
-| `kms_key_arns` | KMS ARNs from the security module | `map(string)` | required |
-| `iam_role_names` | Service role names from the security module | `map(string)` | required |
-| `sqs_visibility_timeout_seconds` | Queue visibility timeout | `number` | `90` |
-| `sqs_max_receive_count` | Max receives before DLQ | `number` | `5` |
-| `dynamodb_billing_mode` | Table billing mode | `string` | `PAY_PER_REQUEST` |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                             | Description                                 | Type          | Default           |
+| -------------------------------- | ------------------------------------------- | ------------- | ----------------- |
+| `name_prefix`                    | Resource name prefix                        | `string`      | required          |
+| `artifact_bucket_name`           | Name of the artifact bucket                 | `string`      | required          |
+| `kms_key_arns`                   | KMS ARNs from the security module           | `map(string)` | required          |
+| `iam_role_names`                 | Service role names from the security module | `map(string)` | required          |
+| `sqs_visibility_timeout_seconds` | Queue visibility timeout                    | `number`      | `90`              |
+| `sqs_max_receive_count`          | Max receives before DLQ                     | `number`      | `5`               |
+| `dynamodb_billing_mode`          | Table billing mode                          | `string`      | `PAY_PER_REQUEST` |
+| `tags`                           | Tags merged into every resource             | `map(string)` | `{}`              |
 
 ## Outputs
 

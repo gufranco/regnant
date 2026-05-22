@@ -7,7 +7,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, Header, Path, status
 
 from ..catalog import build_catalog
-from ..exceptions import AsyncRequired, BadRequest, BindingNotFound, Conflict, InstanceNotFound
+from ..exceptions import AsyncRequired, BadRequest, BindingNotFound, Conflict
 from ..schemas import (
     BindCredentials,
     BindRequest,
@@ -202,7 +202,11 @@ def bind_instance(
         raise Conflict(f"instance {instance_id} is not in a bindable state")
 
     existing = bindings.get_or_none(binding_id, instance_id)
-    if existing is not None and existing.service_id == payload.service_id and existing.plan_id == payload.plan_id:
+    if (
+        existing is not None
+        and existing.service_id == payload.service_id
+        and existing.plan_id == payload.plan_id
+    ):
         return BindResponse(
             credentials=BindCredentials(
                 uri=existing.credentials.get("uri", ""),

@@ -13,13 +13,13 @@ security group set.
 Five customer-managed keys, all with automatic rotation enabled and a
 seven-day deletion window. Each key has an alias for stable reference.
 
-| Purpose | Used by |
-|---------|---------|
-| `s3` | OSB artifact bucket, observability archive bucket |
-| `dynamodb` | `service_instances` and `service_bindings` tables |
-| `sqs` | `provision-tasks` and `binding-tasks` queues |
-| `secrets` | Envelope encryption for every Secrets Manager entry |
-| `logs` | CloudWatch log group encryption |
+| Purpose    | Used by                                             |
+| ---------- | --------------------------------------------------- |
+| `s3`       | OSB artifact bucket, observability archive bucket   |
+| `dynamodb` | `service_instances` and `service_bindings` tables   |
+| `sqs`      | `provision-tasks` and `binding-tasks` queues        |
+| `secrets`  | Envelope encryption for every Secrets Manager entry |
+| `logs`     | CloudWatch log group encryption                     |
 
 ### Local CA + mTLS leaf certificates
 
@@ -71,16 +71,16 @@ production variant would scope it to known upstream CIDRs.
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Prefix on every named resource | `string` | required |
-| `region_label` | Region label, used in CA subject and tags | `string` | required |
-| `vpc_id` | VPC id from the network module | `string` | required |
-| `vpc_cidr` | VPC CIDR for in-VPC ingress rules | `string` | required |
-| `domain_name` | Public-facing domain | `string` | required |
-| `tls_validity_hours` | Validity for CA and leaves | `number` | `8760` |
-| `mesh_services` | Services needing a role + leaf cert | `list(string)` | nine entries, see `variables.tf` |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                 | Description                               | Type           | Default                          |
+| -------------------- | ----------------------------------------- | -------------- | -------------------------------- |
+| `name_prefix`        | Prefix on every named resource            | `string`       | required                         |
+| `region_label`       | Region label, used in CA subject and tags | `string`       | required                         |
+| `vpc_id`             | VPC id from the network module            | `string`       | required                         |
+| `vpc_cidr`           | VPC CIDR for in-VPC ingress rules         | `string`       | required                         |
+| `domain_name`        | Public-facing domain                      | `string`       | required                         |
+| `tls_validity_hours` | Validity for CA and leaves                | `number`       | `8760`                           |
+| `mesh_services`      | Services needing a role + leaf cert       | `list(string)` | nine entries, see `variables.tf` |
+| `tags`               | Tags merged into every resource           | `map(string)`  | `{}`                             |
 
 ## Outputs
 

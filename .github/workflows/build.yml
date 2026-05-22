@@ -28,7 +28,8 @@ jobs:
       matrix:
         include:
           - service: envoy-fleet
-            context: ami/docker
+            context: .
+            file: ami/docker/Dockerfile
           - service: osb-api
             context: services/osb
             target: api
@@ -79,6 +80,7 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
+          file: ${{ matrix.file || format('{0}/Dockerfile', matrix.context) }}
           target: ${{ matrix.target || '' }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}

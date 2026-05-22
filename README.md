@@ -92,24 +92,24 @@ Eight Terraform modules under [`terraform/modules/`](terraform/modules) carry th
 
 ## What's included
 
-| Area | What was built |
-|------|---------------|
-| **Edge** | CloudFront distribution (or nginx surrogate) + Route53 zone + ACM cert. HSTS, X-Content-Type-Options, X-Frame-Options DENY, strict-origin-when-cross-origin referrer, XSS protection applied at the response-headers policy. |
-| **Load balancing** | Network Load Balancer over an autoscaling group of Envoy instances. Configurable count via `envoy_instance_count`; same code path scales to ~150 instances per region in production. |
-| **Control plane** | Upstream [Sovereign](https://github.com/cetanu/sovereign) configured by two custom Python context plugins: `s3_context.py` reads OSB artifacts, `secrets_context.py` reads mTLS leaves from AWS Secrets Manager. |
-| **Open Service Broker** | Full OSB v2.16 surface in FastAPI: catalog, provision, update, deprovision, fetch, last_operation, bind, unbind, fetch binding, binding last_operation. Async worker via SQS with DLQ. |
-| **AMI build** | Packer template that applies a SaltStack highstate in a Docker container, commits the result, registers a synthetic AMI in the LocalStack EC2 catalog, generates an SPDX SBOM, signs with cosign. |
-| **Salt states** | Envoy install with hardened systemd unit, OpenTelemetry collector agent + Vector + Node Exporter, CIS-aligned host hardening (sshd, auditd, fail2ban, AppArmor, kernel lockdown sysctls), HFT-grade network and CPU tuning (BBR, hugepages, NUMA bind, IRQ pinning, GRUB cmdline), containerd + crun + seccomp. |
-| **Authentication** | Rust gRPC `ext_authz` sidecar validates JWTs against Keycloak's JWKS endpoint with 5-minute key caching and 30s leeway. Forwards `x-regnant-roles`, `x-regnant-subject`, `x-regnant-user` to the filter chain. |
-| **Authorization** | RBAC via three realm roles (`viewer`, `editor`, `admin`) mapped to three tier groups (`free-tier`, `pro-tier`, `enterprise-tier`). Keycloak realm reconciled declaratively through the `mrparkers/keycloak` Terraform provider. |
-| **Rate limiting** | Upstream [Steward](https://github.com/cetanu/steward) Rust binary backed by Redis. Domain descriptors per product (jira/confluence/bitbucket) and per tier; descriptors live in [`services/ratelimit/config/regnant.yaml`](services/ratelimit/config/regnant.yaml). |
-| **WASM filters** | Three Rust crates compiled to `wasm32-wasi`: `header-rewriter` (config-driven response header mutation), `ab-router` (deterministic split by xxh3 hash of a configurable request header), `request-id-injector` (W3C `traceparent` + stable `x-request-id`). |
-| **mTLS** | Local CA in the security module mints per-service leaf certs stored in Secrets Manager. Sovereign serves them via SDS. Every mesh service presents a leaf on outbound and validates upstream certs. |
-| **Crypto at rest** | Five KMS customer-managed keys (S3, DynamoDB, SQS, Secrets Manager envelope, CloudWatch Logs), rotation enabled, aliases per purpose. S3 bucket policies reject plaintext HTTP and uploads without `aws:kms` SSE. |
-| **Observability** | OpenTelemetry Collector + Prometheus 3 + Grafana 11 + Loki 3 + Tempo 2 + Promtail. Pre-provisioned dashboards: Envoy fleet, OSB, Sovereign XDS, per-backend comparison, SLO burn rate. Alert rules at [`observability/prometheus_rules/slo-burn.yml`](observability/prometheus_rules/slo-burn.yml). |
-| **Container baseline** | Every image: distroless or chainguard final stage, non-root UID >= 10000, `cap_drop: ALL`, explicit `cap_add` only where required, `no-new-privileges:true`, read-only root with tmpfs for ephemeral writes, multi-arch buildx (`linux/amd64` + `linux/arm64`). |
-| **Supply chain** | Cosign keyless OIDC signing in CI plus a keyed fallback. syft SPDX SBOMs per image. Trivy with `HIGH,CRITICAL --exit-code 1`. SLSA Level 2 provenance on tagged releases. Renovate + Dependabot for dependencies. |
-| **Tests** | Terratest (Go) for IaC modules. pytest E2E for the provisioning flow, bind/unbind, OIDC, mTLS, WASM filters. k6 smoke + sustained load with p50/p95/p99 SLO thresholds. Chaos test that kills a random Envoy and asserts recovery in under 30 s. |
+| Area                    | What was built                                                                                                                                                                                                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Edge**                | CloudFront distribution (or nginx surrogate) + Route53 zone + ACM cert. HSTS, X-Content-Type-Options, X-Frame-Options DENY, strict-origin-when-cross-origin referrer, XSS protection applied at the response-headers policy.                                                                                    |
+| **Load balancing**      | Network Load Balancer over an autoscaling group of Envoy instances. Configurable count via `envoy_instance_count`; same code path scales to ~150 instances per region in production.                                                                                                                            |
+| **Control plane**       | Upstream [Sovereign](https://github.com/cetanu/sovereign) configured by two custom Python context plugins: `s3_context.py` reads OSB artifacts, `secrets_context.py` reads mTLS leaves from AWS Secrets Manager.                                                                                                |
+| **Open Service Broker** | Full OSB v2.16 surface in FastAPI: catalog, provision, update, deprovision, fetch, last_operation, bind, unbind, fetch binding, binding last_operation. Async worker via SQS with DLQ.                                                                                                                          |
+| **AMI build**           | Packer template that applies a SaltStack highstate in a Docker container, commits the result, registers a synthetic AMI in the LocalStack EC2 catalog, generates an SPDX SBOM, signs with cosign.                                                                                                               |
+| **Salt states**         | Envoy install with hardened systemd unit, OpenTelemetry collector agent + Vector + Node Exporter, CIS-aligned host hardening (sshd, auditd, fail2ban, AppArmor, kernel lockdown sysctls), HFT-grade network and CPU tuning (BBR, hugepages, NUMA bind, IRQ pinning, GRUB cmdline), containerd + crun + seccomp. |
+| **Authentication**      | Rust gRPC `ext_authz` sidecar validates JWTs against Keycloak's JWKS endpoint with 5-minute key caching and 30s leeway. Forwards `x-regnant-roles`, `x-regnant-subject`, `x-regnant-user` to the filter chain.                                                                                                  |
+| **Authorization**       | RBAC via three realm roles (`viewer`, `editor`, `admin`) mapped to three tier groups (`free-tier`, `pro-tier`, `enterprise-tier`). Keycloak realm reconciled declaratively through the `mrparkers/keycloak` Terraform provider.                                                                                 |
+| **Rate limiting**       | Upstream [Steward](https://github.com/cetanu/steward) Rust binary backed by Redis. Domain descriptors per product (jira/confluence/bitbucket) and per tier; descriptors live in [`services/ratelimit/config/regnant.yaml`](services/ratelimit/config/regnant.yaml).                                             |
+| **WASM filters**        | Three Rust crates compiled to `wasm32-wasi`: `header-rewriter` (config-driven response header mutation), `ab-router` (deterministic split by xxh3 hash of a configurable request header), `request-id-injector` (W3C `traceparent` + stable `x-request-id`).                                                    |
+| **mTLS**                | Local CA in the security module mints per-service leaf certs stored in Secrets Manager. Sovereign serves them via SDS. Every mesh service presents a leaf on outbound and validates upstream certs.                                                                                                             |
+| **Crypto at rest**      | Five KMS customer-managed keys (S3, DynamoDB, SQS, Secrets Manager envelope, CloudWatch Logs), rotation enabled, aliases per purpose. S3 bucket policies reject plaintext HTTP and uploads without `aws:kms` SSE.                                                                                               |
+| **Observability**       | OpenTelemetry Collector + Prometheus 3 + Grafana 11 + Loki 3 + Tempo 2 + Promtail. Pre-provisioned dashboards: Envoy fleet, OSB, Sovereign XDS, per-backend comparison, SLO burn rate. Alert rules at [`observability/prometheus_rules/slo-burn.yml`](observability/prometheus_rules/slo-burn.yml).             |
+| **Container baseline**  | Every image: distroless or chainguard final stage, non-root UID >= 10000, `cap_drop: ALL`, explicit `cap_add` only where required, `no-new-privileges:true`, read-only root with tmpfs for ephemeral writes, multi-arch buildx (`linux/amd64` + `linux/arm64`).                                                 |
+| **Supply chain**        | Cosign keyless OIDC signing in CI plus a keyed fallback. syft SPDX SBOMs per image. Trivy with `HIGH,CRITICAL --exit-code 1`. SLSA Level 2 provenance on tagged releases. Renovate + Dependabot for dependencies.                                                                                               |
+| **Tests**               | Terratest (Go) for IaC modules. pytest E2E for the provisioning flow, bind/unbind, OIDC, mTLS, WASM filters. k6 smoke + sustained load with p50/p95/p99 SLO thresholds. Chaos test that kills a random Envoy and asserts recovery in under 30 s.                                                                |
 
 ## Quick start
 
@@ -118,17 +118,17 @@ Eight Terraform modules under [`terraform/modules/`](terraform/modules) carry th
 
 ### Prerequisites
 
-| Tool | Version | Used for |
-|------|---------|----------|
-| Docker | 24+ | container runtime for the local stack |
-| Docker Compose | v2.30+ | service orchestration |
-| OpenTofu | 1.10+ (or Terraform 1.5.7+) | infrastructure provisioning |
-| HashiCorp Packer | 1.12+ | AMI image build |
-| Go | 1.23 | Terratest (only for `make test`) |
-| Python | 3.13 | pytest E2E (only for `make test`) |
-| Rust | 1.83 | building the auth sidecar and CLI locally |
-| AWS CLI v2 | latest | talking to LocalStack |
-| pre-commit | latest | local quality gate |
+| Tool             | Version                     | Used for                                  |
+| ---------------- | --------------------------- | ----------------------------------------- |
+| Docker           | 24+                         | container runtime for the local stack     |
+| Docker Compose   | v2.30+                      | service orchestration                     |
+| OpenTofu         | 1.10+ (or Terraform 1.5.7+) | infrastructure provisioning               |
+| HashiCorp Packer | 1.12+                       | AMI image build                           |
+| Go               | 1.23                        | Terratest (only for `make test`)          |
+| Python           | 3.13                        | pytest E2E (only for `make test`)         |
+| Rust             | 1.83                        | building the auth sidecar and CLI locally |
+| AWS CLI v2       | latest                      | talking to LocalStack                     |
+| pre-commit       | latest                      | local quality gate                        |
 
 ### Bring it up
 
@@ -144,16 +144,16 @@ make verify           # smoke health checks across every public endpoint
 
 ### Try the platform
 
-| Action | How |
-|--------|-----|
-| Provision three demo load balancers | `make seed` |
-| Hit Grafana | open <http://localhost:3000> (admin / change in `.env`) |
-| Hit the OSB API + Swagger | open <http://localhost:8080> |
-| Hit Keycloak admin | open <http://localhost:8090> (admin / change in `.env`) |
-| Inspect Sovereign XDS | open <http://localhost:8000/clusters> |
-| Inspect Envoy admin | open <http://localhost:9901/ready> |
-| Tail logs | `make logs` |
-| Container status | `make status` |
+| Action                              | How                                                     |
+| ----------------------------------- | ------------------------------------------------------- |
+| Provision three demo load balancers | `make seed`                                             |
+| Hit Grafana                         | open <http://localhost:3000> (admin / change in `.env`) |
+| Hit the OSB API + Swagger           | open <http://localhost:8080>                            |
+| Hit Keycloak admin                  | open <http://localhost:8090> (admin / change in `.env`) |
+| Inspect Sovereign XDS               | open <http://localhost:8000/clusters>                   |
+| Inspect Envoy admin                 | open <http://localhost:9901/ready>                      |
+| Tail logs                           | `make logs`                                             |
+| Container status                    | `make status`                                           |
 
 ## Project structure
 
@@ -196,31 +196,31 @@ File naming convention: every Terraform module has `versions.tf`, `variables.tf`
 
 `make help` prints this list at runtime. The Makefile carries every recipe inline; there is no separate scripts directory.
 
-| Target | What it does |
-|--------|--------------|
-| `make env` | Creates `.env` from `.env.example` on first run |
-| `make bootstrap` | docker compose up the infrastructure tier; waits for health; brings up app services whose Dockerfiles exist |
-| `make apply` | `tofu apply` against LocalStack (falls back to `terraform`) |
-| `make seed` | Provisions three demo OSB instances and a binding |
-| `make verify` | Smoke health checks against every public endpoint |
-| `make verify-full` | Smoke + terratest + pytest E2E + k6 smoke |
-| `make destroy` | `tofu destroy` + compose down (keeps volumes) |
-| `make destroy-volumes` | Same but removes the named volumes too |
-| `make build-ami` | Packer + Salt; commits the Envoy image and registers the AMI in LocalStack |
-| `make build-images` | `docker compose build` for every locally built image |
-| `make sign` | cosign-signs every locally built image (`IMAGE_TAG=local` by default) |
-| `make sbom` | syft SPDX-JSON SBOMs per image into `sbom/` |
-| `make scan` | Trivy gate on `HIGH,CRITICAL` |
-| `make lint` | `pre-commit run --all-files` |
-| `make fmt` | Apply Terraform, Python, and Rust formatters |
-| `make test` | Full test suite (alias for `verify-full`) |
-| `make coverage` | Per-language coverage with a 95% gate |
-| `make load-test` | k6 sustained load with SLO thresholds |
-| `make logs` | Tail compose logs across every service |
-| `make status` | Show compose service status |
-| `make rotate-keys` | Force re-mint of every mTLS leaf via Sovereign SDS |
-| `make backup` | Snapshot DynamoDB + S3 + Redis + Keycloak realm into `backups/<timestamp>/` |
-| `make restore SRC=backups/<ts>` | Restore from a specific backup |
+| Target                          | What it does                                                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `make env`                      | Creates `.env` from `.env.example` on first run                                                             |
+| `make bootstrap`                | docker compose up the infrastructure tier; waits for health; brings up app services whose Dockerfiles exist |
+| `make apply`                    | `tofu apply` against LocalStack (falls back to `terraform`)                                                 |
+| `make seed`                     | Provisions three demo OSB instances and a binding                                                           |
+| `make verify`                   | Smoke health checks against every public endpoint                                                           |
+| `make verify-full`              | Smoke + terratest + pytest E2E + k6 smoke                                                                   |
+| `make destroy`                  | `tofu destroy` + compose down (keeps volumes)                                                               |
+| `make destroy-volumes`          | Same but removes the named volumes too                                                                      |
+| `make build-ami`                | Packer + Salt; commits the Envoy image and registers the AMI in LocalStack                                  |
+| `make build-images`             | `docker compose build` for every locally built image                                                        |
+| `make sign`                     | cosign-signs every locally built image (`IMAGE_TAG=local` by default)                                       |
+| `make sbom`                     | syft SPDX-JSON SBOMs per image into `sbom/`                                                                 |
+| `make scan`                     | Trivy gate on `HIGH,CRITICAL`                                                                               |
+| `make lint`                     | `pre-commit run --all-files`                                                                                |
+| `make fmt`                      | Apply Terraform, Python, and Rust formatters                                                                |
+| `make test`                     | Full test suite (alias for `verify-full`)                                                                   |
+| `make coverage`                 | Per-language coverage with a 95% gate                                                                       |
+| `make load-test`                | k6 sustained load with SLO thresholds                                                                       |
+| `make logs`                     | Tail compose logs across every service                                                                      |
+| `make status`                   | Show compose service status                                                                                 |
+| `make rotate-keys`              | Force re-mint of every mTLS leaf via Sovereign SDS                                                          |
+| `make backup`                   | Snapshot DynamoDB + S3 + Redis + Keycloak realm into `backups/<timestamp>/`                                 |
+| `make restore SRC=backups/<ts>` | Restore from a specific backup                                                                              |
 
 ## Configuration
 
@@ -228,28 +228,28 @@ Every knob is an environment variable read by Docker Compose or a Terraform vari
 
 ### Compose
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `REGION_LABEL` | `us-east-1` | Synthetic region tag |
-| `KEYCLOAK_ADMIN_PASSWORD` | `changeme` | Override before exposing Keycloak |
-| `GRAFANA_ADMIN_USER` | `admin` | Grafana admin username |
-| `GRAFANA_ADMIN_PASSWORD` | `changeme` | Grafana admin password |
-| `OSB_BROKER_USERNAME` | `broker` | OSB API HTTP Basic auth |
-| `OSB_BROKER_PASSWORD` | `changeme` | OSB API HTTP Basic auth |
-| `ENVOY_INSTANCE_COUNT` | `3` | Number of Envoy containers (docker-compose defines three explicitly) |
+| Variable                  | Default     | Purpose                                                              |
+| ------------------------- | ----------- | -------------------------------------------------------------------- |
+| `REGION_LABEL`            | `us-east-1` | Synthetic region tag                                                 |
+| `KEYCLOAK_ADMIN_PASSWORD` | `changeme`  | Override before exposing Keycloak                                    |
+| `GRAFANA_ADMIN_USER`      | `admin`     | Grafana admin username                                               |
+| `GRAFANA_ADMIN_PASSWORD`  | `changeme`  | Grafana admin password                                               |
+| `OSB_BROKER_USERNAME`     | `broker`    | OSB API HTTP Basic auth                                              |
+| `OSB_BROKER_PASSWORD`     | `changeme`  | OSB API HTTP Basic auth                                              |
+| `ENVOY_INSTANCE_COUNT`    | `3`         | Number of Envoy containers (docker-compose defines three explicitly) |
 
 ### Terraform
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `localstack_endpoint` | `http://localhost:4566` | LocalStack base URL |
-| `region_label` | `us-east-1` | Region label used everywhere |
-| `envoy_instance_count` | `3` | Envoy fleet target; same code at any count |
-| `domain_name` | `regnant.local` | Public domain for Route53 + CloudFront + ACM |
-| `tls_validity_hours` | `8760` | CA and leaf certificate validity window |
-| `keycloak_realm` | `regnant` | Realm name |
-| `keycloak_admin_password` | `changeme` | Override before exposing the realm |
-| `osb_broker_username` / `osb_broker_password` | `broker` / `changeme` | OSB broker credentials |
+| Variable                                      | Default                 | Purpose                                      |
+| --------------------------------------------- | ----------------------- | -------------------------------------------- |
+| `localstack_endpoint`                         | `http://localhost:4566` | LocalStack base URL                          |
+| `region_label`                                | `us-east-1`             | Region label used everywhere                 |
+| `envoy_instance_count`                        | `3`                     | Envoy fleet target; same code at any count   |
+| `domain_name`                                 | `regnant.local`         | Public domain for Route53 + CloudFront + ACM |
+| `tls_validity_hours`                          | `8760`                  | CA and leaf certificate validity window      |
+| `keycloak_realm`                              | `regnant`               | Realm name                                   |
+| `keycloak_admin_password`                     | `changeme`              | Override before exposing the realm           |
+| `osb_broker_username` / `osb_broker_password` | `broker` / `changeme`   | OSB broker credentials                       |
 
 See [`terraform/envs/local/variables.tf`](terraform/envs/local/variables.tf) for the full list including TLS, Redis, AMI, and observability tunables.
 
@@ -270,16 +270,16 @@ flowchart LR
     release --> slsa[SLSA L2 provenance]
 ```
 
-| Workflow | Trigger | What it does |
-|----------|---------|--------------|
-| [`lint.yml`](.github/workflows/lint.yml) | push, PR | pre-commit, tofu/terraform fmt, tflint, tfsec, checkov, actionlint, yamllint, shellcheck, hadolint, ruff, mypy, clippy, cargo-deny, govulncheck |
-| [`test.yml`](.github/workflows/test.yml) | push, PR | Matrix on opentofu 1.12 and terraform 1.5.7: validate + tflint + tfsec + checkov. e2e job brings up the infra tier and confirms LocalStack health. Python and Rust test jobs gated on manifest presence |
-| [`build.yml`](.github/workflows/build.yml) | push, PR | docker buildx for every image, `linux/amd64` + `linux/arm64`, GH cache, attestations + SBOM via buildx |
-| [`sign.yml`](.github/workflows/sign.yml) | after build | cosign signs every image, keyless OIDC by default |
-| [`sbom.yml`](.github/workflows/sbom.yml) | after build | anchore/sbom-action produces SPDX-JSON per image as workflow artifacts |
-| [`trivy.yml`](.github/workflows/trivy.yml) | after build + daily | Trivy `HIGH,CRITICAL --exit-code 1`; SARIF uploaded to the Security tab |
-| [`codeql.yml`](.github/workflows/codeql.yml) | push, PR, weekly | CodeQL `security-extended` + `security-and-quality` on Python, Go, JavaScript, GitHub Actions |
-| [`release.yml`](.github/workflows/release.yml) | tag `v*` | Tagged release with SLSA Level 2 provenance via the upstream generator |
+| Workflow                                       | Trigger             | What it does                                                                                                                                                                                            |
+| ---------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`lint.yml`](.github/workflows/lint.yml)       | push, PR            | pre-commit, tofu/terraform fmt, tflint, tfsec, checkov, actionlint, yamllint, shellcheck, hadolint, ruff, mypy, clippy, cargo-deny, govulncheck                                                         |
+| [`test.yml`](.github/workflows/test.yml)       | push, PR            | Matrix on opentofu 1.12 and terraform 1.5.7: validate + tflint + tfsec + checkov. e2e job brings up the infra tier and confirms LocalStack health. Python and Rust test jobs gated on manifest presence |
+| [`build.yml`](.github/workflows/build.yml)     | push, PR            | docker buildx for every image, `linux/amd64` + `linux/arm64`, GH cache, attestations + SBOM via buildx                                                                                                  |
+| [`sign.yml`](.github/workflows/sign.yml)       | after build         | cosign signs every image, keyless OIDC by default                                                                                                                                                       |
+| [`sbom.yml`](.github/workflows/sbom.yml)       | after build         | anchore/sbom-action produces SPDX-JSON per image as workflow artifacts                                                                                                                                  |
+| [`trivy.yml`](.github/workflows/trivy.yml)     | after build + daily | Trivy `HIGH,CRITICAL --exit-code 1`; SARIF uploaded to the Security tab                                                                                                                                 |
+| [`codeql.yml`](.github/workflows/codeql.yml)   | push, PR, weekly    | CodeQL `security-extended` + `security-and-quality` on Python, Go, JavaScript, GitHub Actions                                                                                                           |
+| [`release.yml`](.github/workflows/release.yml) | tag `v*`            | Tagged release with SLSA Level 2 provenance via the upstream generator                                                                                                                                  |
 
 ## Security posture
 
@@ -299,13 +299,13 @@ The OpenTelemetry pipeline ingests OTLP from every service and fans out by signa
 
 ### SLOs
 
-| Service | SLO | Window |
-|---------|-----|--------|
-| OSB API | 99.5% availability, p95 < 300ms | 30 days |
-| Sovereign XDS | 99.9% availability, p99 push < 500ms | 30 days |
-| Envoy fleet | p50 < 50ms, p95 < 200ms, error rate < 0.1% | 30 days |
-| Auth sidecar | 99.95% availability, p95 < 100ms | 30 days |
-| Steward ratelimit | 99.95% availability, p95 < 50ms | 30 days |
+| Service           | SLO                                        | Window  |
+| ----------------- | ------------------------------------------ | ------- |
+| OSB API           | 99.5% availability, p95 < 300ms            | 30 days |
+| Sovereign XDS     | 99.9% availability, p99 push < 500ms       | 30 days |
+| Envoy fleet       | p50 < 50ms, p95 < 200ms, error rate < 0.1% | 30 days |
+| Auth sidecar      | 99.95% availability, p95 < 100ms           | 30 days |
+| Steward ratelimit | 99.95% availability, p95 < 50ms            | 30 days |
 
 Burn-rate alerts at 1h and 6h windows in [`observability/prometheus_rules/slo-burn.yml`](observability/prometheus_rules/slo-burn.yml).
 
@@ -315,14 +315,14 @@ Provisioned automatically by Grafana on boot. Dashboard JSON sources under [`obs
 
 ## Testing
 
-| Layer | Framework | What it asserts | Where |
-|-------|-----------|-----------------|-------|
-| Unit + integration (Python) | pytest + moto in-process | OSB API + Worker behavior end-to-end against a mocked AWS surface | [`services/osb/tests/`](services/osb/tests/) |
-| Module (Terraform) | Terratest (Go) | Each module applies cleanly against LocalStack; resources exist with the expected shape | [`tests/terratest/`](tests/terratest/) |
-| End-to-end | pytest, marked `e2e` | provision flow, bind/unbind, OIDC, mTLS, WASM filters | [`tests/e2e/`](tests/e2e/) |
-| Load | k6 | p50/p95/p99 SLO thresholds; sustained ramping VUs | [`tests/load/`](tests/load/) |
-| Chaos | pytest, marked `chaos` | Kill a random Envoy; recovery < 30s | [`tests/chaos/`](tests/chaos/) |
-| Mutation | mutmut (config in [`services/osb/mutmut_config.py`](services/osb/mutmut_config.py)) | OSB service mutation kill rate; threshold 75% | run via `mutmut` |
+| Layer                       | Framework                                                                           | What it asserts                                                                         | Where                                        |
+| --------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Unit + integration (Python) | pytest + moto in-process                                                            | OSB API + Worker behavior end-to-end against a mocked AWS surface                       | [`services/osb/tests/`](services/osb/tests/) |
+| Module (Terraform)          | Terratest (Go)                                                                      | Each module applies cleanly against LocalStack; resources exist with the expected shape | [`tests/terratest/`](tests/terratest/)       |
+| End-to-end                  | pytest, marked `e2e`                                                                | provision flow, bind/unbind, OIDC, mTLS, WASM filters                                   | [`tests/e2e/`](tests/e2e/)                   |
+| Load                        | k6                                                                                  | p50/p95/p99 SLO thresholds; sustained ramping VUs                                       | [`tests/load/`](tests/load/)                 |
+| Chaos                       | pytest, marked `chaos`                                                              | Kill a random Envoy; recovery < 30s                                                     | [`tests/chaos/`](tests/chaos/)               |
+| Mutation                    | mutmut (config in [`services/osb/mutmut_config.py`](services/osb/mutmut_config.py)) | OSB service mutation kill rate; threshold 75%                                           | run via `mutmut`                             |
 
 Coverage gate: 95% across statements, branches, functions, lines per language. Run with `make coverage`.
 
@@ -575,14 +575,14 @@ make verify        # smoke health checks
 
 **Verifying it came up.**
 
-| Endpoint | Expectation |
-|----------|------------|
-| `http://localhost:4566/_localstack/health` | services map with everything `running` |
-| `http://localhost:8080/health` | `{"status":"ok"}` |
-| `http://localhost:8000/clusters` | empty array until OSB writes artifacts |
-| `http://localhost:8090/realms/regnant/.well-known/openid-configuration` | OIDC discovery document |
-| `http://localhost:3000` | Grafana login |
-| `http://localhost:9901/ready` | `LIVE` |
+| Endpoint                                                                | Expectation                            |
+| ----------------------------------------------------------------------- | -------------------------------------- |
+| `http://localhost:4566/_localstack/health`                              | services map with everything `running` |
+| `http://localhost:8080/health`                                          | `{"status":"ok"}`                      |
+| `http://localhost:8000/clusters`                                        | empty array until OSB writes artifacts |
+| `http://localhost:8090/realms/regnant/.well-known/openid-configuration` | OIDC discovery document                |
+| `http://localhost:3000`                                                 | Grafana login                          |
+| `http://localhost:9901/ready`                                           | `LIVE`                                 |
 
 **Common failures.** `docker compose up` hangs on the localstack healthcheck (bump `LS_TIMEOUT` to 120 and retry). `tofu apply` fails on `aws_route53_zone` (check `LOCALSTACK_SERVICES` in `.env`). `make build-ami` cannot find packer (install via `brew install hashicorp/tap/packer`). Envoy admin returns 404 on `/ready` (entrypoint logs will show missing env vars).
 
@@ -631,12 +631,12 @@ curl -k https://localhost:8443/issues -H "x-ab-key: test-user"
 
 **Troubleshooting.**
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| `last_operation` stuck on `in progress` | Worker not running | `make status`; check `make logs` |
-| Sovereign `/clusters` empty | S3 artifact not visible | check `s3 ls` and Sovereign's refresh interval |
-| Envoy 503 | XDS not pushed yet or backend down | `curl http://localhost:9901/clusters` |
-| 401 from Envoy | Auth sidecar rejected the JWT | `regnant auth whoami`; re-login if expired |
+| Symptom                                 | Likely cause                       | Fix                                            |
+| --------------------------------------- | ---------------------------------- | ---------------------------------------------- |
+| `last_operation` stuck on `in progress` | Worker not running                 | `make status`; check `make logs`               |
+| Sovereign `/clusters` empty             | S3 artifact not visible            | check `s3 ls` and Sovereign's refresh interval |
+| Envoy 503                               | XDS not pushed yet or backend down | `curl http://localhost:9901/clusters`          |
+| 401 from Envoy                          | Auth sidecar rejected the JWT      | `regnant auth whoami`; re-login if expired     |
 
 </details>
 
@@ -738,21 +738,21 @@ Grafana at <http://localhost:3000> is the entry point.
 
 **Logs (Loki).** Useful filters:
 
-| Filter | What it surfaces |
-|--------|-----------------|
-| `{service="osb-worker"}` | Worker dispatch decisions |
-| `{service="auth-sidecar"} | json | level="warn"` | Token rejections |
-| `{service="envoy-fleet"} | json | duration > 1s` | Slow requests |
-| `{service="envoy-fleet"} | json | response_code >= 500` | Edge errors |
+| Filter                    | What it surfaces          |
+| ------------------------- | ------------------------- | --------------------- | ---------------- |
+| `{service="osb-worker"}`  | Worker dispatch decisions |
+| `{service="auth-sidecar"} | json                      | level="warn"`         | Token rejections |
+| `{service="envoy-fleet"}  | json                      | duration > 1s`        | Slow requests    |
+| `{service="envoy-fleet"}  | json                      | response_code >= 500` | Edge errors      |
 
 **Metrics (Prometheus).**
 
-| Metric | Meaning |
-|--------|---------|
-| `envoy_cluster_upstream_rq_total` | Per-cluster RPS |
-| `envoy_http_downstream_rq_5xx` | Edge errors |
-| `osb_provision_seconds` | OSB Worker provisioning duration histogram |
-| `sovereign_xds_push_seconds` | XDS push latency |
+| Metric                            | Meaning                                    |
+| --------------------------------- | ------------------------------------------ |
+| `envoy_cluster_upstream_rq_total` | Per-cluster RPS                            |
+| `envoy_http_downstream_rq_5xx`    | Edge errors                                |
+| `osb_provision_seconds`           | OSB Worker provisioning duration histogram |
+| `sovereign_xds_push_seconds`      | XDS push latency                           |
 
 **Common diagnoses.** A backend's latency spikes but error rate is flat: ratelimit is shedding load (confirm with `ratelimit_over_limit_total`). 401s climb after a long idle: token rotation issue (check `auth_sidecar_jwks_age_seconds`). Envoy CPU climbs without RPS climb: a WASM filter misbehaving (disable via Sovereign's `extension_configs`).
 
@@ -808,12 +808,12 @@ Sovereign re-fetches and pushes the previous version.
 
 **What gets backed up.**
 
-| Store | Output | Notes |
-|-------|--------|-------|
-| DynamoDB | `dynamodb/<table>.json` | `service_instances`, `service_bindings` |
-| S3 buckets | `s3/<bucket>/` | `regnant-osb-artifacts`, `regnant-observability-archive` |
-| Redis | `redis/dump.rdb` | Sovereign cache + Steward counters |
-| Keycloak | `keycloak/realm.json` | Full realm export |
+| Store      | Output                  | Notes                                                    |
+| ---------- | ----------------------- | -------------------------------------------------------- |
+| DynamoDB   | `dynamodb/<table>.json` | `service_instances`, `service_bindings`                  |
+| S3 buckets | `s3/<bucket>/`          | `regnant-osb-artifacts`, `regnant-observability-archive` |
+| Redis      | `redis/dump.rdb`        | Sovereign cache + Steward counters                       |
+| Keycloak   | `keycloak/realm.json`   | Full realm export                                        |
 
 **Take a backup.**
 
@@ -833,10 +833,10 @@ The recipe restores in this order: DynamoDB rows, S3 objects, Redis dump file (w
 
 **RPO/RTO targets.**
 
-| Tier | RPO | RTO |
-|------|-----|-----|
-| Local dev | best-effort | a few minutes |
-| Production reference | 5 minutes | 30 minutes |
+| Tier                 | RPO         | RTO           |
+| -------------------- | ----------- | ------------- |
+| Local dev            | best-effort | a few minutes |
+| Production reference | 5 minutes   | 30 minutes    |
 
 For the production target: DynamoDB PITR + on-demand backups (already enabled in the OSB module), S3 cross-region replication on both buckets, ElastiCache automated snapshots every 15 minutes, Keycloak realm export to S3 via a CronJob plus DB snapshot.
 
@@ -916,14 +916,14 @@ A platform like this lives for years. The hard parts are not the initial build b
 
 ### The cadence
 
-| Cadence | Activity |
-|---------|----------|
-| Per PR | Self-review against the engineering checklist; reviewer stands their ground on complexity |
-| Weekly | Renovate batches; review and merge |
-| Monthly | Read each Grafana dashboard; flag drifting baselines; rotate leaf certs |
-| Quarterly | Re-read every decision above; supersede ones that no longer apply; write any decision that has accumulated since |
-| Six-monthly | Re-read each module's README cold; confirm it still describes the code |
-| Annually | Rotate the root CA; recompute the per-region capacity math; review the disaster-recovery runbook end-to-end |
+| Cadence     | Activity                                                                                                         |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| Per PR      | Self-review against the engineering checklist; reviewer stands their ground on complexity                        |
+| Weekly      | Renovate batches; review and merge                                                                               |
+| Monthly     | Read each Grafana dashboard; flag drifting baselines; rotate leaf certs                                          |
+| Quarterly   | Re-read every decision above; supersede ones that no longer apply; write any decision that has accumulated since |
+| Six-monthly | Re-read each module's README cold; confirm it still describes the code                                           |
+| Annually    | Rotate the root CA; recompute the per-region capacity math; review the disaster-recovery runbook end-to-end      |
 
 ### Complexity budget
 
@@ -960,13 +960,13 @@ How a new contributor learns the platform, and how an owner stays in shape on it
 
 ### The first week
 
-| Day | Goal | Activity |
-|-----|------|----------|
-| 1 | Run it | `make bootstrap && make apply && make verify` end to end |
-| 2 | See it work | Follow the "Provision a load balancer" runbook start to finish |
-| 3 | Read the architecture | This README from top to bottom; then the eight module READMEs |
-| 4 | Trace a request | Use Grafana's trace-to-logs to follow one request from edge to backend |
-| 5 | Ship something tiny | Add a metric, a Grafana panel, a runbook clarification; merge it |
+| Day | Goal                  | Activity                                                               |
+| --- | --------------------- | ---------------------------------------------------------------------- |
+| 1   | Run it                | `make bootstrap && make apply && make verify` end to end               |
+| 2   | See it work           | Follow the "Provision a load balancer" runbook start to finish         |
+| 3   | Read the architecture | This README from top to bottom; then the eight module READMEs          |
+| 4   | Trace a request       | Use Grafana's trace-to-logs to follow one request from edge to backend |
+| 5   | Ship something tiny   | Add a metric, a Grafana panel, a runbook clarification; merge it       |
 
 By the end of the week, the new contributor has touched every part of the stack with their hands.
 
@@ -995,14 +995,14 @@ The reviewer-author conversation is the platform. Lead with the issue, not the v
 
 ## Trade-offs
 
-| What I would do | Why not now | Risk if shipped as is |
-|-----------------|-------------|----------------------|
-| SPIFFE/SPIRE for workload identity in place of the local CA | Significant operational surface (server, agent, attestor) for a local-first project | Identity is bound to transport material; a leaked private key gives broader access than a leaked SPIFFE ID would |
-| Cross-region replication for the OSB and observability buckets | The local stack is single-region by design | RPO is local-disk; a host crash loses the last backup window |
-| Real CloudFront cache semantics via LocalStack Pro | Free tier targets keep contribution open | Local cache behavior differs from production; tests cannot assert cache-control nuances |
-| Generated Python and Rust SDKs from the OpenAPI definition | Hand-written stubs cover the small surface; CI regenerates on tag | Drift between the OSB API and the SDKs until CI regenerates |
-| Native KMS key rotation tied to AWS-managed schedules | Local rotation is `make rotate-keys` driven | Rotation cadence depends on operator discipline |
-| Per-Envoy host with isolated CPUs for NUMA-bind | Salt states set the cmdline; no booted VM in LocalStack to apply them | The HFT tuning is documentation, not enforced runtime behavior, until you run the AMI on real hardware |
+| What I would do                                                | Why not now                                                                         | Risk if shipped as is                                                                                            |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| SPIFFE/SPIRE for workload identity in place of the local CA    | Significant operational surface (server, agent, attestor) for a local-first project | Identity is bound to transport material; a leaked private key gives broader access than a leaked SPIFFE ID would |
+| Cross-region replication for the OSB and observability buckets | The local stack is single-region by design                                          | RPO is local-disk; a host crash loses the last backup window                                                     |
+| Real CloudFront cache semantics via LocalStack Pro             | Free tier targets keep contribution open                                            | Local cache behavior differs from production; tests cannot assert cache-control nuances                          |
+| Generated Python and Rust SDKs from the OpenAPI definition     | Hand-written stubs cover the small surface; CI regenerates on tag                   | Drift between the OSB API and the SDKs until CI regenerates                                                      |
+| Native KMS key rotation tied to AWS-managed schedules          | Local rotation is `make rotate-keys` driven                                         | Rotation cadence depends on operator discipline                                                                  |
+| Per-Envoy host with isolated CPUs for NUMA-bind                | Salt states set the cmdline; no booted VM in LocalStack to apply them               | The HFT tuning is documentation, not enforced runtime behavior, until you run the AMI on real hardware           |
 
 ## Assumptions
 
@@ -1014,17 +1014,17 @@ The reviewer-author conversation is the platform. Lead with the issue, not the v
 
 ## Source material
 
-| Source | Author | Purpose |
-|--------|--------|---------|
-| [I was laid off by Atlassian](https://www.youtube.com/watch?v=55pTFVoclvE) (YouTube, 40 min) | Vasilios Syrakis | The original architecture walkthrough |
-| [I responded to the drama](https://www.youtube.com/watch?v=OjQEctZx2vk) (YouTube, 17 min) | Vasilios Syrakis | Follow-up Q&A; clarifies several decisions |
-| [cetanu.github.io/blog](https://cetanu.github.io/blog/) | Vasilios Syrakis | Profit or Poverty series on NUMA, real-time kernel, TLB |
-| [`cetanu/sovereign`](https://github.com/cetanu/sovereign) | Vasilios Syrakis | The XDS control plane used here |
-| [`cetanu/steward`](https://github.com/cetanu/steward) | Vasilios Syrakis | The Rust rate-limit service used here |
-| [`cetanu/envoy-formula`](https://github.com/cetanu/envoy-formula) | Vasilios Syrakis | The SaltStack tree informing the `envoy` state |
-| [`cetanu/proxy-wasm-rust-sdk`](https://github.com/cetanu/proxy-wasm-rust-sdk) | Vasilios Syrakis (fork) | Reference for the WASM filter SDK usage |
-| [Open Service Broker API definition](https://www.openservicebrokerapi.org/) | Cloud Foundry Foundation | The OSB v2.16 surface implemented in [`services/osb`](services/osb/) |
-| [Envoy XDS protocol](https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol) | Envoy Project | Contract between Sovereign and the Envoy fleet |
+| Source                                                                                       | Author                   | Purpose                                                              |
+| -------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| [I was laid off by Atlassian](https://www.youtube.com/watch?v=55pTFVoclvE) (YouTube, 40 min) | Vasilios Syrakis         | The original architecture walkthrough                                |
+| [I responded to the drama](https://www.youtube.com/watch?v=OjQEctZx2vk) (YouTube, 17 min)    | Vasilios Syrakis         | Follow-up Q&A; clarifies several decisions                           |
+| [cetanu.github.io/blog](https://cetanu.github.io/blog/)                                      | Vasilios Syrakis         | Profit or Poverty series on NUMA, real-time kernel, TLB              |
+| [`cetanu/sovereign`](https://github.com/cetanu/sovereign)                                    | Vasilios Syrakis         | The XDS control plane used here                                      |
+| [`cetanu/steward`](https://github.com/cetanu/steward)                                        | Vasilios Syrakis         | The Rust rate-limit service used here                                |
+| [`cetanu/envoy-formula`](https://github.com/cetanu/envoy-formula)                            | Vasilios Syrakis         | The SaltStack tree informing the `envoy` state                       |
+| [`cetanu/proxy-wasm-rust-sdk`](https://github.com/cetanu/proxy-wasm-rust-sdk)                | Vasilios Syrakis (fork)  | Reference for the WASM filter SDK usage                              |
+| [Open Service Broker API definition](https://www.openservicebrokerapi.org/)                  | Cloud Foundry Foundation | The OSB v2.16 surface implemented in [`services/osb`](services/osb/) |
+| [Envoy XDS protocol](https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol)      | Envoy Project            | Contract between Sovereign and the Envoy fleet                       |
 
 ## License
 

@@ -17,7 +17,9 @@ from typing import Any
 import yaml
 
 
-def render_resources(instance_id: str, service_id: str, plan_id: str, parameters: dict[str, Any]) -> bytes:
+def render_resources(
+    instance_id: str, service_id: str, plan_id: str, parameters: dict[str, Any]
+) -> bytes:
     """Build the YAML body Sovereign reads as context for one instance."""
 
     upstream = parameters.get("upstream") or _default_upstream(service_id)
@@ -134,7 +136,8 @@ def _transport_socket_matches() -> list[dict[str, Any]]:
                             {"name": "envoy-mtls-cert", "sds_config": {"ads": {}}},
                         ],
                         "validation_context_sds_secret_config": {
-                            "name": "regnant-ca", "sds_config": {"ads": {}},
+                            "name": "regnant-ca",
+                            "sds_config": {"ads": {}},
                         },
                     },
                 },
@@ -199,9 +202,12 @@ def _http_connection_manager(route_name: str) -> dict[str, Any]:
                     },
                 },
             },
-            {"name": "envoy.filters.http.router", "typed_config": {
-                "@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router",
-            }},
+            {
+                "name": "envoy.filters.http.router",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router",
+                },
+            },
         ],
         "route_config": {
             "name": route_name,

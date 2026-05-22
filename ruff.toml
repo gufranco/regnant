@@ -1,0 +1,33 @@
+line-length = 100
+target-version = "py313"
+extend-exclude = [
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "node_modules",
+    "ami",
+    "terraform",
+    ".terraform",
+]
+
+[lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "N",
+    "C4",
+    "SIM",
+    "RUF",
+]
+ignore = [
+    "TID252",
+    "E501",
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101"]

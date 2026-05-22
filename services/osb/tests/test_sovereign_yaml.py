@@ -48,6 +48,8 @@ def test_render_resources_defaults_per_service_id() -> None:
     doc = yaml.safe_load(raw)
 
     # Assert
-    upstream = doc["clusters"][0]["load_assignment"]["endpoints"][0]["lb_endpoints"][0]["endpoint"]["address"]["socket_address"]
+    upstream = doc["clusters"][0]["load_assignment"]["endpoints"][0]["lb_endpoints"][0]["endpoint"][
+        "address"
+    ]["socket_address"]
     assert upstream["address"] == "backend-bitbucket-clone"
     assert upstream["port_value"] == 8080

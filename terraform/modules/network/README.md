@@ -7,15 +7,15 @@ Creates a `/16` VPC with three public and three private subnets (one per simulat
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Prefix prepended to every named resource | `string` | required |
-| `region_label` | Region label used to derive AZ names | `string` | required |
-| `vpc_cidr` | CIDR block for the VPC | `string` | `10.42.0.0/16` |
-| `public_subnet_cidrs` | CIDRs for the three public subnets | `list(string)` | three `/20`s in the VPC |
-| `private_subnet_cidrs` | CIDRs for the three private subnets | `list(string)` | three `/20`s in the VPC |
-| `enable_vpc_endpoints` | Whether to create VPC endpoints | `bool` | `true` |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                   | Description                              | Type           | Default                 |
+| ---------------------- | ---------------------------------------- | -------------- | ----------------------- |
+| `name_prefix`          | Prefix prepended to every named resource | `string`       | required                |
+| `region_label`         | Region label used to derive AZ names     | `string`       | required                |
+| `vpc_cidr`             | CIDR block for the VPC                   | `string`       | `10.42.0.0/16`          |
+| `public_subnet_cidrs`  | CIDRs for the three public subnets       | `list(string)` | three `/20`s in the VPC |
+| `private_subnet_cidrs` | CIDRs for the three private subnets      | `list(string)` | three `/20`s in the VPC |
+| `enable_vpc_endpoints` | Whether to create VPC endpoints          | `bool`         | `true`                  |
+| `tags`                 | Tags merged into every resource          | `map(string)`  | `{}`                    |
 
 ## Outputs
 

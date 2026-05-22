@@ -6,10 +6,10 @@ referenced from Sovereign's `extension_configs` template.
 
 ## Filters
 
-| Crate | Behavior |
-|-------|----------|
-| `header-rewriter` | Add/remove response headers per a JSON config |
-| `ab-router` | Deterministic A/B split by hashing a configurable request header (default `x-ab-key`); sets `x-regnant-cluster` |
+| Crate                 | Behavior                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `header-rewriter`     | Add/remove response headers per a JSON config                                                                           |
+| `ab-router`           | Deterministic A/B split by hashing a configurable request header (default `x-ab-key`); sets `x-regnant-cluster`         |
 | `request-id-injector` | Ensures every request has a W3C `traceparent` and a stable `x-request-id`; copies the request-id back into the response |
 
 ## Build

@@ -18,12 +18,12 @@ receivers:
           scrape_interval: 15s
           metrics_path: /stats/prometheus
           static_configs:
-            - targets: ['127.0.0.1:9901']
+            - targets: ["127.0.0.1:9901"]
 
         - job_name: node-exporter
           scrape_interval: 30s
           static_configs:
-            - targets: ['127.0.0.1:9100']
+            - targets: ["127.0.0.1:9100"]
 
 processors:
   batch:

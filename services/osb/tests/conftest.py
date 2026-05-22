@@ -47,7 +47,7 @@ def aws_env(moto_server: str, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AWS_ENDPOINT_URL", moto_server)
     monkeypatch.setenv("AWS_DEFAULT_REGION", "us-east-1")
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test")
-    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test")  # noqa: S105
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test")
     monkeypatch.setenv("OSB_BROKER_USERNAME", "broker")
     monkeypatch.setenv("OSB_BROKER_PASSWORD", "test-pass")
     monkeypatch.setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://127.0.0.1:0")

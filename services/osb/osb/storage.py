@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import boto3
@@ -12,7 +12,7 @@ import structlog
 from botocore.config import Config
 
 from .config import get_settings
-from .exceptions import ConcurrencyError, InstanceNotFound, BindingNotFound
+from .exceptions import BindingNotFound, ConcurrencyError, InstanceNotFound
 
 logger = structlog.get_logger(__name__)
 
@@ -50,7 +50,7 @@ def _resource(service: str) -> Any:
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 @dataclass(frozen=True, slots=True)
@@ -291,7 +291,9 @@ class TaskQueue:
             MessageBody=json.dumps(payload, separators=(",", ":")),
         )
 
-    def receive(self, *, max_messages: int, wait_seconds: int, visibility_seconds: int) -> list[dict[str, Any]]:
+    def receive(
+        self, *, max_messages: int, wait_seconds: int, visibility_seconds: int
+    ) -> list[dict[str, Any]]:
         response = self._client.receive_message(
             QueueUrl=self._queue_url,
             MaxNumberOfMessages=max_messages,

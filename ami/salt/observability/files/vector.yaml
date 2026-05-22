@@ -30,8 +30,8 @@ sinks:
     encoding:
       codec: json
     labels:
-      service: '{{ service }}'
-      region: '{{ region }}'
-      node_id: '{{ node_id }}'
+      service: "{{ service }}"
+      region: "{{ region }}"
+      node_id: "{{ node_id }}"
     healthcheck:
       enabled: false

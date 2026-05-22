@@ -18,16 +18,16 @@ manage outside the initial realm-export.json once Terraform reaches it.
 
 ## Inputs
 
-| Name | Default | Purpose |
-|------|---------|---------|
-| `name_prefix` | required | Resource name prefix |
-| `realm_name` | `regnant` | Realm identifier |
-| `display_name` | `regnant local` | Human label |
-| `access_token_lifespan` | `900` | Token lifetime in seconds |
-| `refresh_token_lifespan` | `28800` | Refresh lifetime in seconds |
-| `backends` | three clones | Backend client ids |
-| `cli_client_id` | `regnant-cli` | Public CLI client id |
-| `tags` | `{}` | Metadata only |
+| Name                     | Default         | Purpose                     |
+| ------------------------ | --------------- | --------------------------- |
+| `name_prefix`            | required        | Resource name prefix        |
+| `realm_name`             | `regnant`       | Realm identifier            |
+| `display_name`           | `regnant local` | Human label                 |
+| `access_token_lifespan`  | `900`           | Token lifetime in seconds   |
+| `refresh_token_lifespan` | `28800`         | Refresh lifetime in seconds |
+| `backends`               | three clones    | Backend client ids          |
+| `cli_client_id`          | `regnant-cli`   | Public CLI client id        |
+| `tags`                   | `{}`            | Metadata only               |
 
 ## Outputs
 

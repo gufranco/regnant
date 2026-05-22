@@ -51,5 +51,7 @@ def setup() -> None:
         },
     )
     provider = TracerProvider(resource=resource)
-    provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=settings.otel_endpoint, insecure=True)))
+    provider.add_span_processor(
+        BatchSpanProcessor(OTLPSpanExporter(endpoint=settings.otel_endpoint, insecure=True))
+    )
     trace.set_tracer_provider(provider)

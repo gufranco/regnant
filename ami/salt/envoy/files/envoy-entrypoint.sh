@@ -14,6 +14,7 @@ export ENVOY_NODE_ID ENVOY_NODE_CLUSTER ENVOY_REGION
 export SOVEREIGN_XDS_HOST SOVEREIGN_XDS_PORT OTEL_COLLECTOR_HOST OTEL_COLLECTOR_PORT
 
 # envsubst is not in slim images by default; use a python one-liner.
+# shellcheck disable=SC2016
 python3 -c '
 import os, sys
 with open(sys.argv[1], "r") as fh:

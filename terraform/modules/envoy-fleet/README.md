@@ -14,6 +14,7 @@ pipeline has not run yet, falls back to a placeholder id so the first
 `tofu apply` does not fail.
 
 Boots with:
+
 - IMDSv2 required (`http_tokens = "required"`)
 - Detailed monitoring
 - gp3 root volume, 20 GB, KMS-encrypted with the security module's S3 key
@@ -39,26 +40,26 @@ enabled.
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Prefix on every named resource | `string` | required |
-| `region_label` | Region label, for tags and user-data | `string` | required |
-| `vpc_id` | VPC id from the network module | `string` | required |
-| `subnet_ids` | Subnets for the ASG and NLB | `list(string)` | required |
-| `envoy_instance_count` | Desired instance count | `number` | `3` |
-| `instance_type` | EC2 instance type | `string` | `c7i.large` |
-| `ami_owner` | AMI owner filter | `string` | `self` |
-| `ami_name_pattern` | AMI name pattern from Packer | `string` | `regnant-envoy-*` |
-| `fallback_ami_id` | Used when no Packer image is registered yet | `string` | `ami-12345678` |
-| `key_pair_name` | Key pair from the security module | `string` | required |
-| `envoy_security_group_id` | SG id from the security module | `string` | required |
-| `envoy_iam_role_name` | IAM role name from the security module | `string` | required |
-| `leaf_secret_arn` | Envoy mTLS leaf bundle ARN | `string` | required |
-| `ca_secret_arns` | CA secret ARN map | `map(string)` | required |
-| `kms_key_arns` | KMS ARN map | `map(string)` | required |
-| `sovereign_xds_endpoint` | XDS endpoint URL | `string` | `sovereign:8080` |
-| `otel_collector_endpoint` | OTLP endpoint | `string` | `http://otel-collector:4317` |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                      | Description                                 | Type           | Default                      |
+| ------------------------- | ------------------------------------------- | -------------- | ---------------------------- |
+| `name_prefix`             | Prefix on every named resource              | `string`       | required                     |
+| `region_label`            | Region label, for tags and user-data        | `string`       | required                     |
+| `vpc_id`                  | VPC id from the network module              | `string`       | required                     |
+| `subnet_ids`              | Subnets for the ASG and NLB                 | `list(string)` | required                     |
+| `envoy_instance_count`    | Desired instance count                      | `number`       | `3`                          |
+| `instance_type`           | EC2 instance type                           | `string`       | `c7i.large`                  |
+| `ami_owner`               | AMI owner filter                            | `string`       | `self`                       |
+| `ami_name_pattern`        | AMI name pattern from Packer                | `string`       | `regnant-envoy-*`            |
+| `fallback_ami_id`         | Used when no Packer image is registered yet | `string`       | `ami-12345678`               |
+| `key_pair_name`           | Key pair from the security module           | `string`       | required                     |
+| `envoy_security_group_id` | SG id from the security module              | `string`       | required                     |
+| `envoy_iam_role_name`     | IAM role name from the security module      | `string`       | required                     |
+| `leaf_secret_arn`         | Envoy mTLS leaf bundle ARN                  | `string`       | required                     |
+| `ca_secret_arns`          | CA secret ARN map                           | `map(string)`  | required                     |
+| `kms_key_arns`            | KMS ARN map                                 | `map(string)`  | required                     |
+| `sovereign_xds_endpoint`  | XDS endpoint URL                            | `string`       | `sovereign:8080`             |
+| `otel_collector_endpoint` | OTLP endpoint                               | `string`       | `http://otel-collector:4317` |
+| `tags`                    | Tags merged into every resource             | `map(string)`  | `{}`                         |
 
 ## Outputs
 

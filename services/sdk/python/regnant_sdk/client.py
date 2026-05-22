@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import httpx
 
 from .models import (
@@ -78,9 +76,7 @@ class RegnantClient:
 
     def last_operation(self, instance_id: str) -> LastOperation:
         with self._sync() as client:
-            response = client.get(
-                f"/v2/service_instances/{instance_id}/last_operation"
-            )
+            response = client.get(f"/v2/service_instances/{instance_id}/last_operation")
             response.raise_for_status()
             return LastOperation.model_validate(response.json())
 
@@ -125,8 +121,6 @@ class RegnantClient:
 
     async def alast_operation(self, instance_id: str) -> LastOperation:
         async with self._async() as client:
-            response = await client.get(
-                f"/v2/service_instances/{instance_id}/last_operation"
-            )
+            response = await client.get(f"/v2/service_instances/{instance_id}/last_operation")
             response.raise_for_status()
             return LastOperation.model_validate(response.json())

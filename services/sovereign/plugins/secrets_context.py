@@ -56,11 +56,14 @@ class SecretsContextPlugin:
                 name = entry["Name"]
                 if not name.startswith(f"{self._prefix}leaf/"):
                     continue
-                key = name[len(f"{self._prefix}leaf/"):]
+                key = name[len(f"{self._prefix}leaf/") :]
                 try:
                     payload = self._client.get_secret_value(SecretId=name)["SecretString"]
                     secrets[key] = json.loads(payload)
-                except (self._client.exceptions.ResourceNotFoundException, json.JSONDecodeError) as exc:
+                except (
+                    self._client.exceptions.ResourceNotFoundException,
+                    json.JSONDecodeError,
+                ) as exc:
                     logger.warning("could not read secret", name=name, err=str(exc))
             token = response.get("NextToken")
             if not token:

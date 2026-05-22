@@ -48,7 +48,9 @@ def test_provision_creates_instance_and_enqueues(
     assert record["Item"]["state"]["S"] == "provisioning"
 
     sqs = boto3.client("sqs", endpoint_url=moto_server, region_name="us-east-1")
-    msg = sqs.receive_message(QueueUrl=sqs_queues["provision"], MaxNumberOfMessages=1, WaitTimeSeconds=1)
+    msg = sqs.receive_message(
+        QueueUrl=sqs_queues["provision"], MaxNumberOfMessages=1, WaitTimeSeconds=1
+    )
     assert "Messages" in msg
     queued = json.loads(msg["Messages"][0]["Body"])
     assert queued == {"op": "provision", "instance_id": instance_id, **payload}

@@ -26,6 +26,7 @@ module's `logs` key and retains messages for `var.log_retention_days`.
 ### IAM
 
 Each service role gets an inline policy that:
+
 - Allows `logs:CreateLogStream` and `logs:PutLogEvents` on its own
   log group only
 - Allows `kms:Encrypt` and `kms:GenerateDataKey` on the logs KMS key
@@ -33,19 +34,19 @@ Each service role gets an inline policy that:
 
 ## Inputs
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `name_prefix` | Resource name prefix | `string` | required |
-| `region_label` | Region label, for tags | `string` | required |
-| `archive_bucket_name` | Archive bucket name override | `string` | `<prefix>-observability-archive` |
-| `kms_key_arns` | KMS ARN map from security | `map(string)` | required |
-| `iam_role_names` | Service role names from security | `map(string)` | required |
-| `log_retention_days` | CloudWatch retention | `number` | `30` |
-| `archive_ia_days` | Days before IA transition | `number` | `30` |
-| `archive_glacier_days` | Days before Glacier transition | `number` | `90` |
-| `archive_expire_days` | Days before expiration | `number` | `365` |
-| `log_groups` | Service names that get a log group | `list(string)` | nine defaults |
-| `tags` | Tags merged into every resource | `map(string)` | `{}` |
+| Name                   | Description                        | Type           | Default                          |
+| ---------------------- | ---------------------------------- | -------------- | -------------------------------- |
+| `name_prefix`          | Resource name prefix               | `string`       | required                         |
+| `region_label`         | Region label, for tags             | `string`       | required                         |
+| `archive_bucket_name`  | Archive bucket name override       | `string`       | `<prefix>-observability-archive` |
+| `kms_key_arns`         | KMS ARN map from security          | `map(string)`  | required                         |
+| `iam_role_names`       | Service role names from security   | `map(string)`  | required                         |
+| `log_retention_days`   | CloudWatch retention               | `number`       | `30`                             |
+| `archive_ia_days`      | Days before IA transition          | `number`       | `30`                             |
+| `archive_glacier_days` | Days before Glacier transition     | `number`       | `90`                             |
+| `archive_expire_days`  | Days before expiration             | `number`       | `365`                            |
+| `log_groups`           | Service names that get a log group | `list(string)` | nine defaults                    |
+| `tags`                 | Tags merged into every resource    | `map(string)`  | `{}`                             |
 
 ## Outputs
 

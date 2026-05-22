@@ -14,7 +14,7 @@ RUN apt-get update \
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip wheel \
     && /opt/venv/bin/pip install \
-        "sovereign==0.31.4" \
+        "sovereign==0.32.8" \
         "boto3>=1.35.0" \
         "structlog>=24.4.0" \
         "redis>=5.2.0" \

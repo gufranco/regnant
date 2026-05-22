@@ -7,16 +7,16 @@ across LocalStack and real AWS.
 
 ## Pieces
 
-| Path | Purpose |
-|------|---------|
-| `envoy.pkr.hcl` | Packer template. Two builders: docker (default, applies Salt highstate in a debian:12-slim container and commits the result; also registers a synthetic AMI in LocalStack EC2) and amazon-ebs (commented; production variant) |
-| `docker/Dockerfile` | Minimal runtime mirror of the AMI: builder stage downloads envoy + otelcol-contrib; final stage is distroless cc-debian12:nonroot |
-| `salt/top.sls` | Highstate orchestrating the five states below |
-| `salt/envoy/` | Envoy binary install, bootstrap template, entrypoint, hardened systemd unit |
-| `salt/observability/` | OTel collector agent, Vector log forwarder, Node Exporter, agent config that forwards to a central collector |
-| `salt/hardening/` | SSH baseline, auditd rules, fail2ban, AppArmor envoy profile, kernel lockdown sysctls, pwquality |
-| `salt/network/` | TCP tuning, hugepages, NUMA disable, IRQ pinning, CPU governor performance, GRUB cmdline, ulimits. Maps to the Profit-or-Poverty blog series |
-| `salt/containers/` | containerd + runc + crun, default seccomp profile, AppArmor container profile |
+| Path                  | Purpose                                                                                                                                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `envoy.pkr.hcl`       | Packer template. Two builders: docker (default, applies Salt highstate in a debian:12-slim container and commits the result; also registers a synthetic AMI in LocalStack EC2) and amazon-ebs (commented; production variant) |
+| `docker/Dockerfile`   | Minimal runtime mirror of the AMI: builder stage downloads envoy + otelcol-contrib; final stage is distroless cc-debian12:nonroot                                                                                             |
+| `salt/top.sls`        | Highstate orchestrating the five states below                                                                                                                                                                                 |
+| `salt/envoy/`         | Envoy binary install, bootstrap template, entrypoint, hardened systemd unit                                                                                                                                                   |
+| `salt/observability/` | OTel collector agent, Vector log forwarder, Node Exporter, agent config that forwards to a central collector                                                                                                                  |
+| `salt/hardening/`     | SSH baseline, auditd rules, fail2ban, AppArmor envoy profile, kernel lockdown sysctls, pwquality                                                                                                                              |
+| `salt/network/`       | TCP tuning, hugepages, NUMA disable, IRQ pinning, CPU governor performance, GRUB cmdline, ulimits. Maps to the Profit-or-Poverty blog series                                                                                  |
+| `salt/containers/`    | containerd + runc + crun, default seccomp profile, AppArmor container profile                                                                                                                                                 |
 
 ## How to build
 
@@ -28,12 +28,12 @@ Required: Docker, AWS CLI (pointed at LocalStack), Packer 1.12+.
 
 Optional environment variables:
 
-| Var | Default | Effect |
-|-----|---------|--------|
-| `ENVOY_VERSION` | `v1.34.1` | Envoy release line |
-| `IMAGE_TAG` | `local` | Tag applied to the committed Docker image and the registered AMI |
-| `LOCALSTACK_ENDPOINT` | `http://localhost:4566` | LocalStack endpoint for ec2 register-image |
-| `REGION` | `us-east-1` | Region label for the synthetic AMI |
+| Var                   | Default                 | Effect                                                           |
+| --------------------- | ----------------------- | ---------------------------------------------------------------- |
+| `ENVOY_VERSION`       | `v1.34.1`               | Envoy release line                                               |
+| `IMAGE_TAG`           | `local`                 | Tag applied to the committed Docker image and the registered AMI |
+| `LOCALSTACK_ENDPOINT` | `http://localhost:4566` | LocalStack endpoint for ec2 register-image                       |
+| `REGION`              | `us-east-1`             | Region label for the synthetic AMI                               |
 
 The script runs `packer init`, `packer fmt -check`, `packer validate`,
 then `packer build`. The build's docker-tag post-processor commits the

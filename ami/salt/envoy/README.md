@@ -12,25 +12,25 @@ hardened systemd unit.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `init.sls` | The Salt state definition |
-| `files/bootstrap.yaml.tmpl` | Envoy bootstrap with XDS, OTel access logs, admin |
+| File                        | Purpose                                            |
+| --------------------------- | -------------------------------------------------- |
+| `init.sls`                  | The Salt state definition                          |
+| `files/bootstrap.yaml.tmpl` | Envoy bootstrap with XDS, OTel access logs, admin  |
 | `files/envoy-entrypoint.sh` | Renders the template with env vars and execs envoy |
-| `files/envoy.service` | systemd unit with hardening directives |
+| `files/envoy.service`       | systemd unit with hardening directives             |
 
 ## Environment variables consumed by the entrypoint
 
-| Variable | Default | Meaning |
-|----------|---------|---------|
-| `ENVOY_NODE_ID` | `envoy-<hostname>` | XDS node id |
-| `ENVOY_NODE_CLUSTER` | `regnant-fleet` | XDS service cluster |
-| `ENVOY_REGION` | `us-east-1` | Locality region |
-| `SOVEREIGN_XDS_HOST` | `sovereign` | XDS control plane host |
-| `SOVEREIGN_XDS_PORT` | `8080` | XDS control plane port |
-| `OTEL_COLLECTOR_HOST` | `otel-collector` | OTel host |
-| `OTEL_COLLECTOR_PORT` | `4317` | OTel OTLP gRPC port |
-| `ENVOY_LOG_LEVEL` | `info` | Envoy log level |
+| Variable              | Default            | Meaning                |
+| --------------------- | ------------------ | ---------------------- |
+| `ENVOY_NODE_ID`       | `envoy-<hostname>` | XDS node id            |
+| `ENVOY_NODE_CLUSTER`  | `regnant-fleet`    | XDS service cluster    |
+| `ENVOY_REGION`        | `us-east-1`        | Locality region        |
+| `SOVEREIGN_XDS_HOST`  | `sovereign`        | XDS control plane host |
+| `SOVEREIGN_XDS_PORT`  | `8080`             | XDS control plane port |
+| `OTEL_COLLECTOR_HOST` | `otel-collector`   | OTel host              |
+| `OTEL_COLLECTOR_PORT` | `4317`             | OTel OTLP gRPC port    |
+| `ENVOY_LOG_LEVEL`     | `info`             | Envoy log level        |
 
 ## systemd unit hardening
 

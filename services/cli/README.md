@@ -52,9 +52,9 @@ regnant lb delete <instance_id>
 
 ## Environment
 
-| Var | Default | Purpose |
-|-----|---------|---------|
-| `REGNANT_API_URL` | `http://localhost:8080` | OSB API base URL |
-| `REGNANT_USERNAME` | `broker` | OSB basic-auth username |
-| `REGNANT_PASSWORD` | `changeme` | OSB basic-auth password |
-| `KEYCLOAK_REALM_URL` | `http://localhost:8090/realms/regnant` | OIDC issuer |
+| Var                  | Default                                | Purpose                 |
+| -------------------- | -------------------------------------- | ----------------------- |
+| `REGNANT_API_URL`    | `http://localhost:8080`                | OSB API base URL        |
+| `REGNANT_USERNAME`   | `broker`                               | OSB basic-auth username |
+| `REGNANT_PASSWORD`   | `changeme`                             | OSB basic-auth password |
+| `KEYCLOAK_REALM_URL` | `http://localhost:8090/realms/regnant` | OIDC issuer             |

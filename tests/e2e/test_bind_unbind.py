@@ -40,9 +40,7 @@ def test_bind_and_unbind_cycle(
     assert credentials["username"].startswith("binding-")
 
     # Act: fetch the binding.
-    fetch = osb_client.get(
-        f"/v2/service_instances/{instance_id}/service_bindings/{binding_id}"
-    )
+    fetch = osb_client.get(f"/v2/service_instances/{instance_id}/service_bindings/{binding_id}")
     assert fetch.status_code == 200
 
     # Act: unbind.
@@ -56,7 +54,5 @@ def test_bind_and_unbind_cycle(
     assert unbind.status_code == 200
 
     # Assert: gone.
-    after = osb_client.get(
-        f"/v2/service_instances/{instance_id}/service_bindings/{binding_id}"
-    )
+    after = osb_client.get(f"/v2/service_instances/{instance_id}/service_bindings/{binding_id}")
     assert after.status_code == 404

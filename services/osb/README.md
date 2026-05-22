@@ -6,20 +6,20 @@ Dockerfile via two final stages (`api` and `worker`).
 
 ## Endpoints
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| `GET` | `/v2/catalog` | Service offerings: lb-basic, lb-pro, lb-edge, two plans each |
-| `PUT` | `/v2/service_instances/{id}` | Async provision; enqueues, returns 202 |
-| `PATCH` | `/v2/service_instances/{id}` | Async update |
-| `DELETE` | `/v2/service_instances/{id}` | Async deprovision |
-| `GET` | `/v2/service_instances/{id}` | Fetch instance |
-| `GET` | `/v2/service_instances/{id}/last_operation` | Poll for state |
-| `PUT` | `/v2/service_instances/{id}/service_bindings/{bid}` | Create binding |
-| `DELETE` | `/v2/service_instances/{id}/service_bindings/{bid}` | Delete binding |
-| `GET` | `/v2/service_instances/{id}/service_bindings/{bid}` | Fetch binding |
-| `GET` | `/v2/service_instances/{id}/service_bindings/{bid}/last_operation` | Poll binding state |
-| `GET` | `/health` | Liveness |
-| `GET` | `/metrics` | Prometheus exposition |
+| Method   | Path                                                               | Purpose                                                      |
+| -------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| `GET`    | `/v2/catalog`                                                      | Service offerings: lb-basic, lb-pro, lb-edge, two plans each |
+| `PUT`    | `/v2/service_instances/{id}`                                       | Async provision; enqueues, returns 202                       |
+| `PATCH`  | `/v2/service_instances/{id}`                                       | Async update                                                 |
+| `DELETE` | `/v2/service_instances/{id}`                                       | Async deprovision                                            |
+| `GET`    | `/v2/service_instances/{id}`                                       | Fetch instance                                               |
+| `GET`    | `/v2/service_instances/{id}/last_operation`                        | Poll for state                                               |
+| `PUT`    | `/v2/service_instances/{id}/service_bindings/{bid}`                | Create binding                                               |
+| `DELETE` | `/v2/service_instances/{id}/service_bindings/{bid}`                | Delete binding                                               |
+| `GET`    | `/v2/service_instances/{id}/service_bindings/{bid}`                | Fetch binding                                                |
+| `GET`    | `/v2/service_instances/{id}/service_bindings/{bid}/last_operation` | Poll binding state                                           |
+| `GET`    | `/health`                                                          | Liveness                                                     |
+| `GET`    | `/metrics`                                                         | Prometheus exposition                                        |
 
 HTTP Basic auth as required by the spec. Credentials read from env.
 

@@ -149,7 +149,11 @@ services:
       - regnant-mesh
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3",
+        ]
       <<: *healthcheck-defaults
     mem_limit: 1g
     cpus: 1.0
@@ -258,7 +262,11 @@ services:
     networks:
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --spider http://localhost:3000/api/health || exit 1",
+        ]
       <<: *healthcheck-defaults
     mem_limit: 384m
     cpus: 0.75
@@ -279,7 +287,8 @@ services:
     networks:
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3100/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:3100/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
@@ -301,7 +310,8 @@ services:
     networks:
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3200/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:3200/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
@@ -322,7 +332,8 @@ services:
     networks:
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9080/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:9080/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 256m
     cpus: 0.5
@@ -363,7 +374,11 @@ services:
       - regnant-data
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/version || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --spider http://localhost:8080/version || exit 1",
+        ]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
@@ -469,7 +484,8 @@ services:
       - regnant-data
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 384m
     cpus: 0.75
@@ -529,7 +545,8 @@ services:
       - regnant-mesh
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 256m
     cpus: 0.5
@@ -553,7 +570,8 @@ services:
       - regnant-mesh
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 256m
     cpus: 0.5
@@ -577,7 +595,8 @@ services:
       - regnant-mesh
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 256m
     cpus: 0.5
@@ -611,7 +630,8 @@ services:
       - regnant-edge
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
@@ -644,7 +664,8 @@ services:
       - regnant-edge
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
@@ -677,7 +698,8 @@ services:
       - regnant-edge
       - regnant-observe
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -q --spider http://localhost:9901/ready || exit 1"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0

@@ -12,9 +12,7 @@
       "type": "stat",
       "title": "Connected nodes",
       "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
-      "targets": [
-        { "expr": "sovereign_connected_nodes", "refId": "A" }
-      ]
+      "targets": [{ "expr": "sovereign_connected_nodes", "refId": "A" }]
     },
     {
       "type": "timeseries",

@@ -80,7 +80,7 @@ def s3_client(localstack_endpoint: str):
         endpoint_url=localstack_endpoint,
         region_name="us-east-1",
         aws_access_key_id="test",
-        aws_secret_access_key="test",  # noqa: S106
+        aws_secret_access_key="test",
     )
 
 
@@ -91,7 +91,7 @@ def dynamodb_client(localstack_endpoint: str):
         endpoint_url=localstack_endpoint,
         region_name="us-east-1",
         aws_access_key_id="test",
-        aws_secret_access_key="test",  # noqa: S106
+        aws_secret_access_key="test",
     )
 
 
