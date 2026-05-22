@@ -118,3 +118,23 @@ output "osb_binding_queue_url" {
   description = "SQS URL for binding tasks."
   value       = module.osb.binding_queue_url
 }
+
+output "envoy_nlb_dns" {
+  description = "DNS name of the Envoy fleet's network load balancer."
+  value       = module.envoy_fleet.nlb_dns_name
+}
+
+output "envoy_autoscaling_group" {
+  description = "Envoy fleet autoscaling group name."
+  value       = module.envoy_fleet.autoscaling_group_name
+}
+
+output "envoy_target_group_arn" {
+  description = "Envoy NLB target group ARN."
+  value       = module.envoy_fleet.target_group_arn
+}
+
+output "envoy_ami_id" {
+  description = "AMI id the fleet launch template references."
+  value       = module.envoy_fleet.ami_id
+}

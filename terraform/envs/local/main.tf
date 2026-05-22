@@ -47,3 +47,19 @@ module "sovereign" {
   iam_role_names       = module.security.iam_role_names
   tags                 = local.common_tags
 }
+
+module "envoy_fleet" {
+  source                  = "../../modules/envoy-fleet"
+  name_prefix             = "regnant"
+  region_label            = var.region_label
+  vpc_id                  = module.network.vpc_id
+  subnet_ids              = module.network.public_subnet_ids
+  envoy_instance_count    = var.envoy_instance_count
+  key_pair_name           = module.security.key_pair_name
+  envoy_security_group_id = module.security.security_group_ids["envoy"]
+  envoy_iam_role_name     = module.security.iam_role_names["envoy"]
+  leaf_secret_arn         = module.security.leaf_secret_arns["envoy"]
+  ca_secret_arns          = module.security.ca_secret_arns
+  kms_key_arns            = module.security.kms_key_arns
+  tags                    = local.common_tags
+}

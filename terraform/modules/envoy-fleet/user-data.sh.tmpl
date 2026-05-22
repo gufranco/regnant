@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# User-data executed at instance boot. Pulls the mTLS leaf bundle and
+# the root CA from Secrets Manager, materializes them on disk, and
+# starts the Envoy systemd unit shipped in the AMI.
+
+set -euo pipefail
+
+LEAF_SECRET_ARN="${leaf_secret_arn}"
+CA_CERT_SECRET_ARN="${ca_cert_secret_arn}"
+SOVEREIGN_XDS_ENDPOINT="${sovereign_xds_endpoint}"
+OTEL_COLLECTOR_ENDPOINT="${otel_collector_endpoint}"
+REGION="${region_label}"
+
+ENV_FILE=/etc/envoy/env
+mkdir -p /etc/envoy /etc/envoy/tls
+chmod 0750 /etc/envoy/tls
+
+aws --region "$REGION" secretsmanager get-secret-value \
+    --secret-id "$LEAF_SECRET_ARN" \
+    --query SecretString --output text > /etc/envoy/tls/leaf.json
+
+python3 - <<'PY'
+import json, os
+with open("/etc/envoy/tls/leaf.json") as f:
+    bundle = json.load(f)
+for key, path in (
+    ("certificate_pem", "/etc/envoy/tls/cert.pem"),
+    ("private_key_pem", "/etc/envoy/tls/key.pem"),
+    ("ca_cert_pem",     "/etc/envoy/tls/ca.pem"),
+):
+    with open(path, "w") as out:
+        out.write(bundle[key])
+    os.chmod(path, 0o600)
+PY
+rm -f /etc/envoy/tls/leaf.json
+
+cat > "$ENV_FILE" <<ENVFILE
+SOVEREIGN_XDS_ENDPOINT=$SOVEREIGN_XDS_ENDPOINT
+OTEL_EXPORTER_OTLP_ENDPOINT=$OTEL_COLLECTOR_ENDPOINT
+ENVOY_NODE_CLUSTER=regnant-fleet
+ENVOY_REGION=$REGION
+ENVFILE
+chmod 0640 "$ENV_FILE"
+
+systemctl daemon-reload
+systemctl enable --now envoy.service
+systemctl enable --now otel-collector-agent.service
