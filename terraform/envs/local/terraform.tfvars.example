@@ -1,0 +1,18 @@
+# Copy to terraform.tfvars and tune as needed.
+# Anything left commented uses the default declared in variables.tf.
+# Never commit terraform.tfvars; it is in .gitignore.
+
+# localstack_endpoint = "http://localhost:4566"
+# region_label        = "us-east-1"
+
+# Scale knobs.
+# envoy_instance_count = 3
+
+# Domain Route53 + CloudFront + ACM bind to.
+# domain_name = "regnant.local"
+
+# OSB broker credentials (local dev only). Override both before any
+# deployment. See variables.tf for the variable names.
+
+# Keycloak admin credentials (local dev only). Override before exposing
+# the realm beyond localhost. See variables.tf for the variable names.

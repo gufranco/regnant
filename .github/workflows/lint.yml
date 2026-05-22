@@ -1,0 +1,164 @@
+name: lint
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    name: pre-commit (all hooks)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.12.0"
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+
+      - name: Install pre-commit
+        run: pipx install pre-commit
+
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit on all files
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  terraform-fmt:
+    name: opentofu/terraform fmt
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.12.0"
+      - run: tofu fmt -check -recursive terraform/
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+      - run: terraform fmt -check -recursive terraform/
+
+  shell:
+    name: shellcheck
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ludeeus/action-shellcheck@2.0.0
+        env:
+          SHELLCHECK_OPTS: -e SC1091
+
+  actions:
+    name: actionlint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: raven-actions/actionlint@v2
+
+  hadolint:
+    name: hadolint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
+          ignore: DL3008,DL3018
+
+  yaml:
+    name: yamllint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: pipx install yamllint
+      - run: yamllint -c .yamllint.yaml .
+
+  python-lint:
+    name: python (ruff + mypy + pip-audit)
+    runs-on: ubuntu-24.04
+    if: hashFiles('services/**/pyproject.toml') != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pipx install ruff
+      - run: ruff check services/ tests/ || true
+      - run: ruff format --check services/ tests/ || true
+      - run: pipx install pip-audit
+      - run: |
+          for d in services/*/; do
+            if [ -f "$d/pyproject.toml" ]; then
+              pip-audit -r "$d/requirements.txt" || true
+            fi
+          done
+
+  rust-lint:
+    name: rust (clippy + cargo-deny)
+    runs-on: ubuntu-24.04
+    if: hashFiles('services/**/Cargo.toml') != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: clippy on all Cargo projects
+        run: |
+          shopt -s globstar nullglob
+          for manifest in services/**/Cargo.toml envoy/filters/**/Cargo.toml; do
+            cargo clippy --manifest-path "$manifest" --all-targets --all-features -- -D warnings
+          done
+      - name: cargo-deny
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          arguments: --all-features check
+          manifest-path: services/cli/Cargo.toml
+        continue-on-error: true
+
+  go-lint:
+    name: go (vet + govulncheck)
+    runs-on: ubuntu-24.04
+    if: hashFiles('tests/terratest/go.mod') != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - working-directory: tests/terratest
+        run: |
+          go vet ./...
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
