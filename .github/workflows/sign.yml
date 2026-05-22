@@ -1,6 +1,7 @@
 name: sign
 
 on:
+  workflow_call:
   workflow_run:
     workflows: ["build"]
     types: [completed]
