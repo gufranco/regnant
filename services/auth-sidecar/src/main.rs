@@ -17,39 +17,11 @@ use tonic::{transport::Server, Request, Response, Status};
 use tracing::{error, info, warn};
 use tracing_subscriber::EnvFilter;
 
-#[allow(clippy::all)]
-#[allow(unused_qualifications)]
-mod envoy {
-    pub mod service {
-        pub mod auth {
-            pub mod v3 {
-                tonic::include_proto!("envoy.service.auth.v3");
-            }
-        }
-    }
-    pub mod config {
-        pub mod core {
-            pub mod v3 {
-                tonic::include_proto!("envoy.config.core.v3");
-            }
-        }
-    }
-    pub mod r#type {
-        pub mod v3 {
-            tonic::include_proto!("envoy.r#type.v3");
-        }
-        pub mod matcher {
-            pub mod v3 {
-                tonic::include_proto!("envoy.r#type.matcher.v3");
-            }
-        }
-    }
-}
-
-use envoy::service::auth::v3::{
-    authorization_server::{Authorization, AuthorizationServer},
-    check_response, CheckRequest, CheckResponse, DeniedHttpResponse, OkHttpResponse,
+use envoy_types::ext_authz::v3::pb::{
+    self as authpb, Authorization, AuthorizationServer, CheckRequest, CheckResponse,
+    DeniedHttpResponse, HeaderValue, HeaderValueOption, HttpStatus, OkHttpResponse,
 };
+use envoy_types::pb::google::rpc::Status as RpcStatus;
 
 #[derive(Debug, Clone, Deserialize)]
 struct Jwks {
@@ -73,6 +45,7 @@ struct JwksKey {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[allow(dead_code)]
 struct Claims {
     #[serde(default)]
     sub: String,
@@ -166,7 +139,7 @@ impl AuthService {
         let keys = self.jwks().await?;
         let key = keys.get(&kid).ok_or_else(|| anyhow!("unknown kid {kid}"))?;
         let mut validation = Validation::new(if alg == Algorithm::HS256 { Algorithm::RS256 } else { alg });
-        validation.set_issuer(&[self.issuer.clone()]);
+        validation.set_issuer(std::slice::from_ref(&self.issuer));
         validation.validate_aud = false;
         validation.leeway = 30;
         let data = decode::<Claims>(token, key, &validation).context("verify jwt")?;
@@ -208,17 +181,14 @@ impl Authorization for AuthService {
 }
 
 fn allow(claims: &Claims) -> Response<CheckResponse> {
-    use envoy::config::core::v3::HeaderValue;
-    use envoy::config::core::v3::HeaderValueOption;
-
     let roles = claims.realm_access.roles.join(",");
     let response = CheckResponse {
-        status: Some(prost_types::Status {
+        status: Some(RpcStatus {
             code: 0,
             message: String::new(),
             details: vec![],
         }),
-        http_response: Some(check_response::HttpResponse::OkResponse(OkHttpResponse {
+        http_response: Some(authpb::HttpResponse::OkResponse(OkHttpResponse {
             headers: vec![
                 HeaderValueOption {
                     header: Some(HeaderValue {
@@ -226,7 +196,6 @@ fn allow(claims: &Claims) -> Response<CheckResponse> {
                         value: roles,
                         ..Default::default()
                     }),
-                    append: None,
                     ..Default::default()
                 },
                 HeaderValueOption {
@@ -235,7 +204,6 @@ fn allow(claims: &Claims) -> Response<CheckResponse> {
                         value: claims.sub.clone(),
                         ..Default::default()
                     }),
-                    append: None,
                     ..Default::default()
                 },
                 HeaderValueOption {
@@ -244,7 +212,6 @@ fn allow(claims: &Claims) -> Response<CheckResponse> {
                         value: claims.preferred_username.clone(),
                         ..Default::default()
                     }),
-                    append: None,
                     ..Default::default()
                 },
             ],
@@ -257,13 +224,15 @@ fn allow(claims: &Claims) -> Response<CheckResponse> {
 
 fn deny(reason: &str) -> Response<CheckResponse> {
     let response = CheckResponse {
-        status: Some(prost_types::Status {
+        status: Some(RpcStatus {
             code: 7,
             message: reason.to_string(),
             details: vec![],
         }),
-        http_response: Some(check_response::HttpResponse::DeniedResponse(DeniedHttpResponse {
-            status: Some(envoy::r#type::v3::HttpStatus { code: 401 }),
+        http_response: Some(authpb::HttpResponse::DeniedResponse(DeniedHttpResponse {
+            status: Some(HttpStatus {
+                code: 401,
+            }),
             headers: vec![],
             body: reason.to_string(),
         })),

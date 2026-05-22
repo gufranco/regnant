@@ -17,7 +17,7 @@ RUN python -m venv /opt/venv \
         "sovereign==0.32.8" \
         "boto3>=1.35.0" \
         "structlog>=24.4.0" \
-        "redis>=5.2.0" \
+        "redis<=5.0.0" \
         "opentelemetry-api>=1.28.0" \
         "opentelemetry-sdk>=1.28.0" \
         "opentelemetry-exporter-otlp-proto-grpc>=1.28.0"

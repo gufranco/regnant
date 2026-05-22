@@ -24,11 +24,11 @@ WORKDIR /opt/build
 
 RUN ARCH="$(dpkg --print-architecture)" \
     && case "$ARCH" in \
-        amd64) FUNC_E_ARCH=x86_64; GO_ARCH=amd64 ;; \
-        arm64) FUNC_E_ARCH=aarch64; GO_ARCH=arm64 ;; \
+        amd64) ENVOY_ARCH=amd64; GO_ARCH=amd64 ;; \
+        arm64) ENVOY_ARCH=arm64; GO_ARCH=arm64 ;; \
         *) echo "unsupported arch $ARCH" >&2; exit 1 ;; \
     esac \
-    && curl -fsSL "https://archive.tetratelabs.io/envoy/download/${ENVOY_VERSION}/envoy-${ENVOY_VERSION}-linux-${FUNC_E_ARCH}.tar.xz" -o envoy.tar.xz \
+    && curl -fsSL "https://github.com/tetratelabs/archive-envoy/releases/download/${ENVOY_VERSION}/envoy-${ENVOY_VERSION}-linux-${ENVOY_ARCH}.tar.xz" -o envoy.tar.xz \
     && tar -xJf envoy.tar.xz \
     && cp "$(find . -maxdepth 3 -type f -name envoy | head -n1)" /opt/build/envoy \
     && chmod +x /opt/build/envoy \

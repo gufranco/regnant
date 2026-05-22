@@ -1,15 +1,13 @@
-FROM rust:1.83-bookworm AS builder
+FROM rust:1.86-bookworm AS builder
 
 # hadolint ignore=DL3008
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends protobuf-compiler ca-certificates \
+    && apt-get install --yes --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
-COPY Cargo.toml Cargo.lock* ./
-COPY build.rs ./
+COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-COPY proto ./proto
 
 RUN cargo build --release --locked
 
