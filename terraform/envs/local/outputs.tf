@@ -68,3 +68,28 @@ output "public_subnet_ids" {
   description = "Public subnet ids from the network module."
   value       = module.network.public_subnet_ids
 }
+
+output "kms_key_arns" {
+  description = "KMS key ARNs keyed by purpose."
+  value       = module.security.kms_key_arns
+}
+
+output "iam_role_arns" {
+  description = "Service IAM role ARNs keyed by service."
+  value       = module.security.iam_role_arns
+}
+
+output "security_group_ids" {
+  description = "Security group ids keyed by tier."
+  value       = module.security.security_group_ids
+}
+
+output "acm_certificate_arn" {
+  description = "ACM certificate for the public edge."
+  value       = module.security.acm_certificate_arn
+}
+
+output "leaf_secret_arns" {
+  description = "Per-service mTLS leaf bundle ARNs."
+  value       = module.security.leaf_secret_arns
+}

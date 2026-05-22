@@ -18,11 +18,16 @@ module "network" {
   tags         = local.common_tags
 }
 
-# Phase 4: security module (KMS, IAM, KeyPair, ACM, local CA).
-# module "security" {
-#   source = "../../modules/security"
-#   ...
-# }
+module "security" {
+  source             = "../../modules/security"
+  name_prefix        = "regnant"
+  region_label       = var.region_label
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = module.network.vpc_cidr
+  domain_name        = var.domain_name
+  tls_validity_hours = var.tls_validity_hours
+  tags               = local.common_tags
+}
 
 # Phase 5: OSB module (S3, DynamoDB, SQS).
 # module "osb" {
