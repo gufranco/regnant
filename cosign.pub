@@ -1,0 +1,11 @@
+-----BEGIN PUBLIC KEY-----
+PLACEHOLDER
+This file should be replaced with the actual public half of the
+cosign keypair generated for the project. Generate with:
+
+  cosign generate-key-pair
+
+The private half goes into the GitHub repo secrets as COSIGN_PRIVATE_KEY;
+the password as COSIGN_PASSWORD. CI uses keyless OIDC by default so
+this file is only needed for offline verification.
+-----END PUBLIC KEY-----
