@@ -10,6 +10,8 @@ FROM debian:12-slim AS builder
 ARG ENVOY_VERSION
 ARG OTEL_VERSION
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends \

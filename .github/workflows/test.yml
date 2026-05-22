@@ -174,6 +174,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends protobuf-compiler
       - uses: Swatinem/rust-cache@v2
       - name: cargo test on all projects
         run: |

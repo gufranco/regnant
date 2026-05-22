@@ -161,6 +161,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends protobuf-compiler
       - uses: Swatinem/rust-cache@v2
       - name: clippy on all Cargo projects
         run: |

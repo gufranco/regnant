@@ -14,13 +14,15 @@ export ENVOY_NODE_ID ENVOY_NODE_CLUSTER ENVOY_REGION
 export SOVEREIGN_XDS_HOST SOVEREIGN_XDS_PORT OTEL_COLLECTOR_HOST OTEL_COLLECTOR_PORT
 
 # envsubst is not in slim images by default; use a python one-liner.
-python3 - <<'PY' < /etc/envoy/bootstrap.yaml.tmpl > /etc/envoy/bootstrap.yaml
+python3 -c '
 import os, sys
-data = sys.stdin.read()
+with open(sys.argv[1], "r") as fh:
+    data = fh.read()
 for key, value in os.environ.items():
     data = data.replace(f"${{{key}}}", value)
-sys.stdout.write(data)
-PY
+with open(sys.argv[2], "w") as fh:
+    fh.write(data)
+' /etc/envoy/bootstrap.yaml.tmpl /etc/envoy/bootstrap.yaml
 
 chown envoy:envoy /etc/envoy/bootstrap.yaml
 chmod 0640 /etc/envoy/bootstrap.yaml

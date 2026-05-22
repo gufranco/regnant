@@ -4,7 +4,9 @@
 
 **A production-grade, end-to-end reproduction of the Atlassian internal platform that Vasilios Syrakis described in his 2026 YouTube videos. Envoy fleet on AWS, dynamic XDS control plane, Open Service Broker self-service, full mTLS mesh, OIDC, OpenTelemetry, and a Packer + SaltStack AMI build, all running locally on LocalStack.**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/ci.yml)
+[![Build](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/build.yml?branch=main&label=build&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/build.yml)
+[![Lint](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/lint.yml?branch=main&label=lint&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/lint.yml)
+[![Test](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/test.yml?branch=main&label=test&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](LICENSE)
 [![OpenTofu](https://img.shields.io/badge/OpenTofu-1.10+-7B42BC?style=flat-square)](https://opentofu.org/)
 [![Envoy](https://img.shields.io/badge/Envoy-v1.34-AC6199?style=flat-square)](https://www.envoyproxy.io/)
@@ -157,7 +159,7 @@ make verify           # smoke health checks across every public endpoint
 
 ```text
 regnant/
-  .github/workflows/      9 pipelines: ci, build, lint, test, sign, sbom, trivy, codeql, release
+  .github/workflows/      8 pipelines: lint, test, build, sign, sbom, trivy, codeql, release
   ami/                    Packer template + 5 Salt states + Docker mirror image
   edge/                   nginx CloudFront surrogate config
   envoy/                  Envoy bootstrap template + 3 WASM filter crates
@@ -253,15 +255,14 @@ See [`terraform/envs/local/variables.tf`](terraform/envs/local/variables.tf) for
 
 ## CI/CD pipeline
 
-Nine GitHub Actions workflows live under [`.github/workflows/`](.github/workflows). A single [`ci.yml`](.github/workflows/ci.yml) is the umbrella pipeline that runs on every push to `main` and every PR.
+Eight GitHub Actions workflows live under [`.github/workflows/`](.github/workflows). Each runs independently on every push to `main` and every PR. The signing and SBOM workflows fire after the build workflow finishes, via `workflow_run` triggers.
 
 ```mermaid
 flowchart LR
-    push[push / PR] --> ci[ci.yml]
-    ci -->|fan out| lint[lint.yml]
-    ci --> test[test.yml]
-    ci --> codeql[codeql.yml]
-    ci --> build[build.yml]
+    push[push / PR] --> lint[lint.yml]
+    push --> test[test.yml]
+    push --> codeql[codeql.yml]
+    push --> build[build.yml]
     build --> sign[sign.yml]
     build --> sbom[sbom.yml]
     build --> trivy[trivy.yml]
@@ -271,7 +272,6 @@ flowchart LR
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| [`ci.yml`](.github/workflows/ci.yml) | push, PR | Umbrella status check that fans out into lint + test + codeql + build, then sign/sbom/trivy |
 | [`lint.yml`](.github/workflows/lint.yml) | push, PR | pre-commit, tofu/terraform fmt, tflint, tfsec, checkov, actionlint, yamllint, shellcheck, hadolint, ruff, mypy, clippy, cargo-deny, govulncheck |
 | [`test.yml`](.github/workflows/test.yml) | push, PR | Matrix on opentofu 1.12 and terraform 1.5.7: validate + tflint + tfsec + checkov. e2e job brings up the infra tier and confirms LocalStack health. Python and Rust test jobs gated on manifest presence |
 | [`build.yml`](.github/workflows/build.yml) | push, PR | docker buildx for every image, `linux/amd64` + `linux/arm64`, GH cache, attestations + SBOM via buildx |
