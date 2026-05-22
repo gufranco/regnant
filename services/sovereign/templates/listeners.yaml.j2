@@ -1,0 +1,8 @@
+{%- for artifact in artifacts.values() %}
+{%- for listener in artifact.get("listeners", []) %}
+- "@type": type.googleapis.com/envoy.config.listener.v3.Listener
+  name: {{ listener.name }}
+  address: {{ listener.address | tojson }}
+  filter_chains: {{ listener.filter_chains | tojson }}
+{%- endfor %}
+{%- endfor %}

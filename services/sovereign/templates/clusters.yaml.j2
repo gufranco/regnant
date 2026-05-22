@@ -1,0 +1,14 @@
+{# Render the union of every per-instance cluster the OSB worker emitted. #}
+{%- for artifact in artifacts.values() %}
+{%- for cluster in artifact.get("clusters", []) %}
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: {{ cluster.name }}
+  connect_timeout: {{ cluster.connect_timeout | default("2s") }}
+  type: {{ cluster.type | default("STRICT_DNS") }}
+  lb_policy: {{ cluster.lb_policy | default("ROUND_ROBIN") }}
+  load_assignment: {{ cluster.load_assignment | tojson }}
+  {%- if cluster.health_checks %}
+  health_checks: {{ cluster.health_checks | tojson }}
+  {%- endif %}
+{%- endfor %}
+{%- endfor %}

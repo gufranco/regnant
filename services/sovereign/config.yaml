@@ -1,0 +1,49 @@
+# Sovereign control plane configuration. Renders XDS responses from
+# Envoy YAML artifacts written by the OSB worker into the S3 artifact
+# bucket plus mTLS secrets from AWS Secrets Manager.
+
+node_matching:
+  # Match every connecting Envoy whose node.id starts with "envoy-".
+  service_clusters: ["regnant-fleet"]
+
+statsd:
+  enabled: false
+
+logging:
+  application:
+    level: ${LOG_LEVEL:-INFO}
+    format: json
+  access:
+    enabled: true
+
+templates:
+  default:
+    clusters: file:///etc/sovereign/templates/clusters.yaml.j2
+    routes: file:///etc/sovereign/templates/routes.yaml.j2
+    listeners: file:///etc/sovereign/templates/listeners.yaml.j2
+    secrets: file:///etc/sovereign/templates/secrets.yaml.j2
+    extension_configs: file:///etc/sovereign/templates/extension_configs.yaml.j2
+
+template_context:
+  artifacts:
+    type: regnant.s3_context
+    config:
+      bucket: ${OSB_ARTIFACT_BUCKET:-regnant-osb-artifacts}
+      prefix: ${OSB_ARTIFACT_PREFIX:-envoy-resources/}
+      refresh_interval: 30
+      endpoint_url: ${AWS_ENDPOINT_URL:-http://localstack:4566}
+      region: ${AWS_DEFAULT_REGION:-us-east-1}
+
+  secrets:
+    type: regnant.secrets_context
+    config:
+      prefix: regnant/
+      refresh_interval: 60
+      endpoint_url: ${AWS_ENDPOINT_URL:-http://localstack:4566}
+      region: ${AWS_DEFAULT_REGION:-us-east-1}
+
+modifiers: []
+global_modifiers: []
+debug: false
+
+regions: ["${AWS_DEFAULT_REGION:-us-east-1}"]

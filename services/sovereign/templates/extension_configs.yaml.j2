@@ -1,0 +1,49 @@
+{# WASM filter configurations referenced by HCM filter chains. Each
+   filter is loaded by Envoy as an extension_config. The runtime image
+   pulls the .wasm artifacts from /etc/envoy/filters at boot. #}
+- "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter
+  name: regnant.header_rewriter
+  typed_config:
+    "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+    config:
+      name: regnant.header_rewriter
+      root_id: header_rewriter
+      vm_config:
+        runtime: envoy.wasm.runtime.v8
+        code:
+          local:
+            filename: /etc/envoy/filters/header_rewriter.wasm
+      configuration:
+        "@type": type.googleapis.com/google.protobuf.StringValue
+        value: |
+          {"add": {"x-served-by": "regnant"}}
+
+- "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter
+  name: regnant.ab_router
+  typed_config:
+    "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+    config:
+      name: regnant.ab_router
+      root_id: ab_router
+      vm_config:
+        runtime: envoy.wasm.runtime.v8
+        code:
+          local:
+            filename: /etc/envoy/filters/ab_router.wasm
+      configuration:
+        "@type": type.googleapis.com/google.protobuf.StringValue
+        value: |
+          {"split_header": "x-ab-key", "weight": 50}
+
+- "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter
+  name: regnant.request_id_injector
+  typed_config:
+    "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+    config:
+      name: regnant.request_id_injector
+      root_id: request_id_injector
+      vm_config:
+        runtime: envoy.wasm.runtime.v8
+        code:
+          local:
+            filename: /etc/envoy/filters/request_id_injector.wasm

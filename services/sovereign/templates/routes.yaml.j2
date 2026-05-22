@@ -1,0 +1,7 @@
+{%- for artifact in artifacts.values() %}
+{%- for route in artifact.get("routes", []) %}
+- "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+  name: {{ route.name }}
+  virtual_hosts: {{ route.virtual_hosts | tojson }}
+{%- endfor %}
+{%- endfor %}
