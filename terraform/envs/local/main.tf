@@ -75,6 +75,14 @@ module "edge" {
   tags                = local.common_tags
 }
 
+module "identity" {
+  source       = "../../modules/identity"
+  name_prefix  = "regnant"
+  realm_name   = var.keycloak_realm
+  display_name = "regnant local realm"
+  tags         = local.common_tags
+}
+
 module "observability" {
   source         = "../../modules/observability"
   name_prefix    = "regnant"

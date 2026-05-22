@@ -1,0 +1,44 @@
+name: sbom
+
+on:
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: read
+
+concurrency:
+  group: sbom-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  syft:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - ghcr.io/gufranco/regnant/envoy-fleet
+          - ghcr.io/gufranco/regnant/osb-api
+          - ghcr.io/gufranco/regnant/osb-worker
+          - ghcr.io/gufranco/regnant/sovereign
+          - ghcr.io/gufranco/regnant/auth-sidecar
+          - ghcr.io/gufranco/regnant/ratelimit
+          - ghcr.io/gufranco/regnant/backend-jira-clone
+          - ghcr.io/gufranco/regnant/backend-confluence-clone
+          - ghcr.io/gufranco/regnant/backend-bitbucket-clone
+          - ghcr.io/gufranco/regnant/cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anchore/sbom-action@v0
+        with:
+          image: ${{ matrix.image }}:${{ github.ref_name }}
+          format: spdx-json
+          output-file: sbom-${{ matrix.image }}-spdx.json
+          upload-artifact: true
+          artifact-name: sbom-${{ matrix.image }}

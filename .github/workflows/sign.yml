@@ -1,0 +1,48 @@
+name: sign
+
+on:
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+concurrency:
+  group: sign-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cosign:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - ghcr.io/gufranco/regnant/envoy-fleet
+          - ghcr.io/gufranco/regnant/osb-api
+          - ghcr.io/gufranco/regnant/osb-worker
+          - ghcr.io/gufranco/regnant/sovereign
+          - ghcr.io/gufranco/regnant/auth-sidecar
+          - ghcr.io/gufranco/regnant/ratelimit
+          - ghcr.io/gufranco/regnant/backend-jira-clone
+          - ghcr.io/gufranco/regnant/backend-confluence-clone
+          - ghcr.io/gufranco/regnant/backend-bitbucket-clone
+          - ghcr.io/gufranco/regnant/cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: sigstore/cosign-installer@v3.7.0
+        with:
+          cosign-release: v2.4.1
+
+      - name: Sign with OIDC (keyless)
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          tag="${GITHUB_REF_NAME:-main}"
+          cosign sign --yes "${{ matrix.image }}:${tag}"
