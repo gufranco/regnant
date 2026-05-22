@@ -1,0 +1,40 @@
+{
+  "title": "SLO Burn Rate",
+  "uid": "regnant-slo-burn",
+  "tags": ["regnant", "slo"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Edge error budget burn (1h vs 6h)",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "(sum(rate(envoy_http_downstream_rq_xx{response_code_class=\"5\"}[1h])) / sum(rate(envoy_http_downstream_rq_total[1h]))) / (1 - 0.995)",
+          "legendFormat": "1h burn (target 99.5%)",
+          "refId": "A"
+        },
+        {
+          "expr": "(sum(rate(envoy_http_downstream_rq_xx{response_code_class=\"5\"}[6h])) / sum(rate(envoy_http_downstream_rq_total[6h]))) / (1 - 0.995)",
+          "legendFormat": "6h burn",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 14.4 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

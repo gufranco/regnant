@@ -1,0 +1,132 @@
+groups:
+  - name: regnant.slo.edge
+    interval: 30s
+    rules:
+      - alert: EdgeErrorBudgetBurnFast
+        expr: |
+          (
+            sum(rate(envoy_http_downstream_rq_xx{response_code_class="5"}[1h]))
+            /
+            sum(rate(envoy_http_downstream_rq_total[1h]))
+          ) > (14.4 * (1 - 0.995))
+        for: 5m
+        labels:
+          severity: page
+          slo: edge_availability
+        annotations:
+          summary: "Edge availability burning error budget fast (1h window)"
+          description: |
+            5xx rate over the last hour exceeds the 14.4x burn threshold
+            against a 99.5% target. Page on-call.
+
+      - alert: EdgeErrorBudgetBurnSlow
+        expr: |
+          (
+            sum(rate(envoy_http_downstream_rq_xx{response_code_class="5"}[6h]))
+            /
+            sum(rate(envoy_http_downstream_rq_total[6h]))
+          ) > (6 * (1 - 0.995))
+        for: 30m
+        labels:
+          severity: ticket
+          slo: edge_availability
+        annotations:
+          summary: "Edge availability burning error budget (6h window)"
+          description: |
+            Sustained elevated error rate over 6h. File a ticket; the
+            error budget will exhaust in days at this rate.
+
+      - alert: EdgeLatencyP95High
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(envoy_http_downstream_rq_time_bucket[5m]))
+          ) > 200
+        for: 10m
+        labels:
+          severity: ticket
+          slo: edge_latency
+        annotations:
+          summary: "Edge p95 latency above 200ms"
+          description: "Confirm with the Envoy Fleet dashboard."
+
+  - name: regnant.slo.control_plane
+    interval: 30s
+    rules:
+      - alert: SovereignXdsPushSlow
+        expr: |
+          histogram_quantile(0.99,
+            sum by (le) (rate(sovereign_xds_push_seconds_bucket[5m]))
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: page
+          slo: control_plane_latency
+        annotations:
+          summary: "Sovereign XDS push p99 > 500ms"
+          description: "Envoy nodes may receive stale config."
+
+      - alert: SovereignNoConnectedNodes
+        expr: sovereign_connected_nodes == 0
+        for: 5m
+        labels:
+          severity: page
+          slo: control_plane_availability
+        annotations:
+          summary: "Sovereign has zero connected nodes"
+          description: |
+            Either the Envoy fleet is down or Sovereign cannot serve
+            XDS. Walk back through inspect-xds runbook.
+
+  - name: regnant.slo.osb
+    interval: 30s
+    rules:
+      - alert: OsbProvisionQueueBacklog
+        expr: aws_sqs_approximate_number_of_messages_visible{queue_name="regnant-provision-tasks"} > 100
+        for: 15m
+        labels:
+          severity: ticket
+          slo: osb_throughput
+        annotations:
+          summary: "OSB provision queue backing up"
+          description: "Worker likely wedged on a poison message."
+
+      - alert: OsbWorkerDLQNonEmpty
+        expr: aws_sqs_approximate_number_of_messages_visible{queue_name=~"regnant-.*-dlq"} > 0
+        for: 5m
+        labels:
+          severity: ticket
+          slo: osb_throughput
+        annotations:
+          summary: "Messages in the OSB DLQ"
+          description: |
+            Inspect with the OSB Worker logs and the DLQ visualizer
+            before requeueing.
+
+  - name: regnant.security
+    interval: 60s
+    rules:
+      - alert: AuthSidecarTokenRejectSpike
+        expr: |
+          sum(rate(auth_sidecar_tokens_rejected_total[5m]))
+          > 5 * sum(rate(auth_sidecar_tokens_accepted_total[5m]))
+        for: 10m
+        labels:
+          severity: page
+          slo: identity
+        annotations:
+          summary: "Auth sidecar rejection rate dominates accepts"
+          description: |
+            Either Keycloak rotated keys without the sidecar catching
+            up, or someone is fuzzing tokens. Check JWKS cache age.
+
+      - alert: RatelimitOverLimitSpike
+        expr: |
+          sum by (domain) (rate(ratelimit_service_rate_limit_over_limit[5m]))
+          > 10 * sum by (domain) (rate(ratelimit_service_rate_limit_within_limit[5m]))
+        for: 15m
+        labels:
+          severity: ticket
+          slo: ratelimit_health
+        annotations:
+          summary: "Ratelimit drops exceed allows by 10x in {{ $labels.domain }}"
+          description: "Confirm with the Ratelimit dashboard."

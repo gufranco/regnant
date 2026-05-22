@@ -1,0 +1,296 @@
+openapi: 3.1.0
+info:
+  title: regnant Open Service Broker
+  version: 0.1.0
+  description: Open Service Broker v2.16 implementation for the regnant platform.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: http://localhost:8080
+    description: Local dev
+security:
+  - basicAuth: []
+
+paths:
+  /v2/catalog:
+    get:
+      operationId: getCatalog
+      summary: Service catalog
+      parameters:
+        - $ref: "#/components/parameters/BrokerVersion"
+      responses:
+        "200":
+          description: Catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+
+  /v2/service_instances/{instance_id}:
+    parameters:
+      - $ref: "#/components/parameters/InstanceId"
+    put:
+      operationId: provisionInstance
+      summary: Provision a service instance (async)
+      parameters:
+        - $ref: "#/components/parameters/AcceptsIncomplete"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProvisionRequest"
+      responses:
+        "202":
+          description: Accepted; provisioning in progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionResponse"
+    patch:
+      operationId: updateInstance
+      summary: Update a service instance (async)
+      parameters:
+        - $ref: "#/components/parameters/AcceptsIncomplete"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequest"
+      responses:
+        "202":
+          description: Accepted
+    delete:
+      operationId: deprovisionInstance
+      summary: Deprovision a service instance
+      parameters:
+        - $ref: "#/components/parameters/AcceptsIncomplete"
+        - in: query
+          name: service_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: plan_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+    get:
+      operationId: fetchInstance
+      summary: Fetch a service instance
+      responses:
+        "200":
+          description: OK
+
+  /v2/service_instances/{instance_id}/last_operation:
+    parameters:
+      - $ref: "#/components/parameters/InstanceId"
+    get:
+      operationId: instanceLastOperation
+      responses:
+        "200":
+          description: Operation state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LastOperation"
+
+  /v2/service_instances/{instance_id}/service_bindings/{binding_id}:
+    parameters:
+      - $ref: "#/components/parameters/InstanceId"
+      - $ref: "#/components/parameters/BindingId"
+    put:
+      operationId: bindInstance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BindRequest"
+      responses:
+        "201":
+          description: Bound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BindResponse"
+    delete:
+      operationId: unbindInstance
+      parameters:
+        - in: query
+          name: service_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: plan_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Unbound
+    get:
+      operationId: fetchBinding
+      responses:
+        "200":
+          description: Binding
+
+  /v2/service_instances/{instance_id}/service_bindings/{binding_id}/last_operation:
+    parameters:
+      - $ref: "#/components/parameters/InstanceId"
+      - $ref: "#/components/parameters/BindingId"
+    get:
+      operationId: bindingLastOperation
+      responses:
+        "200":
+          description: Operation state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LastOperation"
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  parameters:
+    BrokerVersion:
+      in: header
+      name: X-Broker-API-Version
+      required: true
+      schema:
+        type: string
+        default: "2.16"
+    AcceptsIncomplete:
+      in: query
+      name: accepts_incomplete
+      required: false
+      schema:
+        type: boolean
+    InstanceId:
+      in: path
+      name: instance_id
+      required: true
+      schema:
+        type: string
+    BindingId:
+      in: path
+      name: binding_id
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Catalog:
+      type: object
+      required: [services]
+      properties:
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/Service"
+
+    Service:
+      type: object
+      required: [id, name, description, plans]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        bindable: { type: boolean }
+        plan_updateable: { type: boolean }
+        instances_retrievable: { type: boolean }
+        bindings_retrievable: { type: boolean }
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plan"
+
+    Plan:
+      type: object
+      required: [id, name, description]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        free: { type: boolean }
+        bindable: { type: boolean }
+        plan_updateable: { type: boolean }
+
+    ProvisionRequest:
+      type: object
+      required: [service_id, plan_id]
+      properties:
+        service_id: { type: string }
+        plan_id: { type: string }
+        context:
+          type: object
+          additionalProperties: true
+        parameters:
+          type: object
+          additionalProperties: true
+
+    ProvisionResponse:
+      type: object
+      properties:
+        dashboard_url:
+          type: string
+          format: uri
+        operation: { type: string }
+
+    UpdateRequest:
+      type: object
+      required: [service_id]
+      properties:
+        service_id: { type: string }
+        plan_id: { type: string }
+        parameters:
+          type: object
+          additionalProperties: true
+        previous_values:
+          type: object
+          additionalProperties: true
+
+    BindRequest:
+      type: object
+      required: [service_id, plan_id]
+      properties:
+        service_id: { type: string }
+        plan_id: { type: string }
+        parameters:
+          type: object
+          additionalProperties: true
+        bind_resource:
+          type: object
+          additionalProperties: true
+
+    BindResponse:
+      type: object
+      required: [credentials]
+      properties:
+        credentials:
+          type: object
+          additionalProperties: true
+        operation: { type: string }
+
+    LastOperation:
+      type: object
+      required: [state]
+      properties:
+        state:
+          type: string
+          enum: [in progress, succeeded, failed]
+        description: { type: string }
+        instance_usable: { type: boolean }
+        update_repeatable: { type: boolean }
