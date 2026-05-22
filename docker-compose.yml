@@ -607,8 +607,8 @@ services:
   envoy-1:
     image: regnant/envoy-fleet:local
     build:
-      context: ./ami/docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ami/docker/Dockerfile
     container_name: regnant-envoy-1
     <<: [*common-restart, *common-logging]
     environment:
@@ -642,8 +642,8 @@ services:
   envoy-2:
     image: regnant/envoy-fleet:local
     build:
-      context: ./ami/docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ami/docker/Dockerfile
     container_name: regnant-envoy-2
     <<: [*common-restart, *common-logging]
     environment:
@@ -676,8 +676,8 @@ services:
   envoy-3:
     image: regnant/envoy-fleet:local
     build:
-      context: ./ami/docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ami/docker/Dockerfile
     container_name: regnant-envoy-3
     <<: [*common-restart, *common-logging]
     environment:

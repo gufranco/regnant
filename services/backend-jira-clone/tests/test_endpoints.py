@@ -12,9 +12,8 @@ import os
 os.environ.setdefault("OTEL_EXPORTER_OTLP_ENDPOINT", "http://127.0.0.1:1")
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import _make_app
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
