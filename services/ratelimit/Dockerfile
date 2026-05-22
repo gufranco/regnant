@@ -5,12 +5,14 @@ RUN apt-get update \
     && apt-get install --yes --no-install-recommends git protobuf-compiler ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+RUN rustup component add rustfmt
+
 WORKDIR /build
 ARG STEWARD_REF=main
 # hadolint ignore=DL3003
 RUN git clone --depth 1 --branch "$STEWARD_REF" https://github.com/cetanu/steward.git \
     && cd steward \
-    && cargo build --release --locked
+    && cargo build --release
 
 FROM gcr.io/distroless/cc-debian12:nonroot
 

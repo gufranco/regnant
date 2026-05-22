@@ -97,10 +97,10 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: bring up infra tier
+      - name: bring up infra tier (LocalStack, Redis, Keycloak, OTel)
         run: |
           cp .env.example .env
-          make bootstrap
+          docker compose up -d --wait localstack redis keycloak otel-collector prometheus grafana loki tempo promtail nginx
 
       - name: localstack health
         run: |
