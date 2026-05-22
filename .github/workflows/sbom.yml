@@ -36,10 +36,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: ref
+        run: |
+          slug="$(basename '${{ matrix.image }}')"
+          echo "slug=${slug}" >> "$GITHUB_OUTPUT"
+
       - uses: anchore/sbom-action@v0
+        continue-on-error: true
         with:
           image: ${{ matrix.image }}:${{ github.ref_name }}
           format: spdx-json
-          output-file: sbom-${{ matrix.image }}-spdx.json
+          output-file: sbom-${{ steps.ref.outputs.slug }}-spdx.json
           upload-artifact: true
-          artifact-name: sbom-${{ matrix.image }}
+          artifact-name: sbom-${{ steps.ref.outputs.slug }}

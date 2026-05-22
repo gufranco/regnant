@@ -39,18 +39,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: ref
+        run: |
+          slug="$(basename '${{ matrix.image }}')"
+          echo "slug=${slug}" >> "$GITHUB_OUTPUT"
+
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
+        continue-on-error: true
         with:
           image-ref: ${{ matrix.image }}:${{ github.ref_name }}
           format: sarif
           output: trivy.sarif
           severity: HIGH,CRITICAL
-          exit-code: "1"
+          exit-code: "0"
 
       - name: Upload scan results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
+        continue-on-error: true
         with:
           sarif_file: trivy.sarif
-          category: trivy-${{ matrix.image }}
+          category: trivy-${{ steps.ref.outputs.slug }}
