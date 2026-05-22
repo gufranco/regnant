@@ -93,3 +93,28 @@ output "leaf_secret_arns" {
   description = "Per-service mTLS leaf bundle ARNs."
   value       = module.security.leaf_secret_arns
 }
+
+output "osb_artifact_bucket" {
+  description = "S3 bucket holding OSB provisioning artifacts."
+  value       = module.osb.artifact_bucket_name
+}
+
+output "osb_instances_table" {
+  description = "DynamoDB table for service instances."
+  value       = module.osb.instances_table_name
+}
+
+output "osb_bindings_table" {
+  description = "DynamoDB table for service bindings."
+  value       = module.osb.bindings_table_name
+}
+
+output "osb_provision_queue_url" {
+  description = "SQS URL for provisioning tasks."
+  value       = module.osb.provision_queue_url
+}
+
+output "osb_binding_queue_url" {
+  description = "SQS URL for binding tasks."
+  value       = module.osb.binding_queue_url
+}

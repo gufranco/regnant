@@ -1,7 +1,5 @@
-# Local environment composition.
-# Each module corresponds to one canvas region. Modules are added
-# progressively across the plan's phases. Phase 2 ships this skeleton
-# so `tofu init && tofu validate` work today.
+# Local environment composition. Each module owns one logical area of
+# the platform; modules compose here and share outputs via this file.
 
 locals {
   common_tags = {
@@ -29,38 +27,11 @@ module "security" {
   tags               = local.common_tags
 }
 
-# Phase 5: OSB module (S3, DynamoDB, SQS).
-# module "osb" {
-#   source = "../../modules/osb"
-#   ...
-# }
-
-# Phase 6: Sovereign module (SSM parameters, IAM role, health gate).
-# module "sovereign" {
-#   source = "../../modules/sovereign"
-#   ...
-# }
-
-# Phase 7: Envoy fleet module (Launch Template, ASG, NLB, Target Group).
-# module "envoy_fleet" {
-#   source = "../../modules/envoy-fleet"
-#   ...
-# }
-
-# Phase 9: Edge module (Route53, CloudFront/nginx).
-# module "edge" {
-#   source = "../../modules/edge"
-#   ...
-# }
-
-# Phase 10: Observability module (S3 archive, IAM, lifecycle).
-# module "observability" {
-#   source = "../../modules/observability"
-#   ...
-# }
-
-# Phase 20: Identity module (Keycloak realm + clients).
-# module "identity" {
-#   source = "../../modules/identity"
-#   ...
-# }
+module "osb" {
+  source               = "../../modules/osb"
+  name_prefix          = "regnant"
+  artifact_bucket_name = var.osb_artifact_bucket_name
+  kms_key_arns         = module.security.kms_key_arns
+  iam_role_names       = module.security.iam_role_names
+  tags                 = local.common_tags
+}
