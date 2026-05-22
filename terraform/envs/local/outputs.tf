@@ -138,3 +138,33 @@ output "envoy_ami_id" {
   description = "AMI id the fleet launch template references."
   value       = module.envoy_fleet.ami_id
 }
+
+output "edge_public_url" {
+  description = "Primary URL where the platform is reachable."
+  value       = module.edge.public_url
+}
+
+output "edge_internal_url" {
+  description = "Internal URL that bypasses CloudFront."
+  value       = module.edge.internal_url
+}
+
+output "edge_cloudfront_domain" {
+  description = "CloudFront-managed domain name."
+  value       = module.edge.cloudfront_domain_name
+}
+
+output "edge_hosted_zone_id" {
+  description = "Route53 hosted zone id."
+  value       = module.edge.hosted_zone_id
+}
+
+output "observability_archive_bucket" {
+  description = "S3 bucket for long-term log and trace archival."
+  value       = module.observability.archive_bucket_name
+}
+
+output "observability_log_groups" {
+  description = "CloudWatch log group names keyed by service."
+  value       = module.observability.log_group_names
+}

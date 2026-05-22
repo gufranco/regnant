@@ -63,3 +63,23 @@ module "envoy_fleet" {
   kms_key_arns            = module.security.kms_key_arns
   tags                    = local.common_tags
 }
+
+module "edge" {
+  source              = "../../modules/edge"
+  name_prefix         = "regnant"
+  domain_name         = var.domain_name
+  vpc_id              = module.network.vpc_id
+  nlb_dns_name        = module.envoy_fleet.nlb_dns_name
+  nlb_zone_id         = module.envoy_fleet.nlb_zone_id
+  acm_certificate_arn = module.security.acm_certificate_arn
+  tags                = local.common_tags
+}
+
+module "observability" {
+  source         = "../../modules/observability"
+  name_prefix    = "regnant"
+  region_label   = var.region_label
+  kms_key_arns   = module.security.kms_key_arns
+  iam_role_names = module.security.iam_role_names
+  tags           = local.common_tags
+}
