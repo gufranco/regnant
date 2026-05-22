@@ -53,3 +53,18 @@ output "tempo_url" {
   description = "Tempo HTTP endpoint."
   value       = "http://localhost:3200"
 }
+
+output "vpc_id" {
+  description = "VPC identifier from the network module."
+  value       = module.network.vpc_id
+}
+
+output "private_subnet_ids" {
+  description = "Private subnet ids from the network module."
+  value       = module.network.private_subnet_ids
+}
+
+output "public_subnet_ids" {
+  description = "Public subnet ids from the network module."
+  value       = module.network.public_subnet_ids
+}

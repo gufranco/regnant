@@ -11,11 +11,12 @@ locals {
   }
 }
 
-# Phase 3: network module (VPC, Subnet, IGW).
-# module "network" {
-#   source = "../../modules/network"
-#   ...
-# }
+module "network" {
+  source       = "../../modules/network"
+  name_prefix  = "regnant"
+  region_label = var.region_label
+  tags         = local.common_tags
+}
 
 # Phase 4: security module (KMS, IAM, KeyPair, ACM, local CA).
 # module "security" {
