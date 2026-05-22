@@ -1,0 +1,60 @@
+domain: regnant
+descriptors:
+  - key: product
+    value: jira-clone
+    descriptors:
+      - key: tier
+        value: free
+        rate_limit:
+          unit: minute
+          requests_per_unit: 60
+      - key: tier
+        value: pro
+        rate_limit:
+          unit: minute
+          requests_per_unit: 600
+      - key: tier
+        value: enterprise
+        rate_limit:
+          unit: minute
+          requests_per_unit: 6000
+  - key: product
+    value: confluence-clone
+    descriptors:
+      - key: tier
+        value: free
+        rate_limit:
+          unit: minute
+          requests_per_unit: 30
+      - key: tier
+        value: pro
+        rate_limit:
+          unit: minute
+          requests_per_unit: 300
+      - key: tier
+        value: enterprise
+        rate_limit:
+          unit: minute
+          requests_per_unit: 3000
+  - key: product
+    value: bitbucket-clone
+    descriptors:
+      - key: tier
+        value: free
+        rate_limit:
+          unit: minute
+          requests_per_unit: 100
+      - key: tier
+        value: pro
+        rate_limit:
+          unit: minute
+          requests_per_unit: 1000
+      - key: tier
+        value: enterprise
+        rate_limit:
+          unit: minute
+          requests_per_unit: 10000
+  - key: anonymous
+    rate_limit:
+      unit: minute
+      requests_per_unit: 10

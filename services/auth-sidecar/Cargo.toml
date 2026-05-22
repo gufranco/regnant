@@ -1,0 +1,37 @@
+[package]
+name = "regnant-auth-sidecar"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+license = "Apache-2.0"
+description = "Envoy ext_authz sidecar that validates JWTs against Keycloak"
+repository = "https://github.com/gufranco/regnant"
+
+[[bin]]
+name = "auth-sidecar"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1.42", features = ["full"] }
+tonic = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+jsonwebtoken = "9.3"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+parking_lot = "0.12"
+once_cell = "1.20"
+async-trait = "0.1"
+thiserror = "2.0"
+anyhow = "1.0"
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

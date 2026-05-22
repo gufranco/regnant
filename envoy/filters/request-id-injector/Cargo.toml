@@ -1,0 +1,22 @@
+[package]
+name = "regnant-request-id-injector"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+license = "Apache-2.0"
+description = "Envoy WASM HTTP filter that ensures W3C trace context and a stable x-request-id"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+proxy-wasm = "0.2"
+log = "0.4"
+uuid = { version = "1.11", default-features = false, features = ["v4", "fast-rng"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
