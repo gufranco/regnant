@@ -100,7 +100,7 @@ jobs:
       - name: bring up infra tier (LocalStack, Redis, Keycloak, OTel)
         run: |
           cp .env.example .env
-          docker compose up -d --wait localstack redis keycloak otel-collector prometheus grafana loki tempo promtail nginx
+          docker compose up -d --wait localstack redis keycloak otel-collector prometheus grafana loki tempo promtail
 
       - name: localstack health
         run: |
