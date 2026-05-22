@@ -28,6 +28,7 @@ struct TokenResponse {
     error: Option<String>,
 }
 
+#[allow(dead_code)]
 pub struct Token {
     pub access_token: String,
     pub refresh_token: String,

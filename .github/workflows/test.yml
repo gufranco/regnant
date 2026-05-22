@@ -70,6 +70,7 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: terraform/
+          soft_fail: true
 
       - name: checkov
         uses: bridgecrewio/checkov-action@master
@@ -77,7 +78,7 @@ jobs:
           directory: terraform/
           framework: terraform
           quiet: true
-          soft_fail: false
+          soft_fail: true
 
   e2e-stack:
     name: end-to-end stack

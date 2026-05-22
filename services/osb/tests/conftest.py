@@ -3,6 +3,7 @@ layer talks to a real (mocked) AWS surface."""
 
 from __future__ import annotations
 
+import contextlib
 import os
 import socket
 import threading
@@ -62,18 +63,14 @@ def aws_env(moto_server: str, monkeypatch: pytest.MonkeyPatch) -> None:
 def s3_bucket(moto_server: str) -> Iterator[str]:
     bucket = "regnant-osb-artifacts"
     client = boto3.client("s3", endpoint_url=moto_server, region_name="us-east-1")
-    try:
+    with contextlib.suppress(client.exceptions.BucketAlreadyOwnedByYou):
         client.create_bucket(Bucket=bucket)
-    except client.exceptions.BucketAlreadyOwnedByYou:
-        pass
     yield bucket
     objects = client.list_objects_v2(Bucket=bucket).get("Contents", [])
     for obj in objects:
         client.delete_object(Bucket=bucket, Key=obj["Key"])
-    try:
+    with contextlib.suppress(client.exceptions.ClientError):
         client.delete_bucket(Bucket=bucket)
-    except client.exceptions.ClientError:
-        pass
 
 
 @pytest.fixture
@@ -140,7 +137,5 @@ def sqs_queues(moto_server: str) -> Iterator[dict[str, str]]:
     os.environ["OSB_BINDING_QUEUE_URL"] = binding
     yield {"provision": provision, "binding": binding}
     for url in (provision, binding):
-        try:
+        with contextlib.suppress(client.exceptions.ClientError):
             client.delete_queue(QueueUrl=url)
-        except client.exceptions.ClientError:
-            pass
