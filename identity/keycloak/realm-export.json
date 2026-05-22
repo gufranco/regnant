@@ -1,0 +1,111 @@
+{
+  "realm": "regnant",
+  "enabled": true,
+  "displayName": "regnant local realm",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "roles": {
+    "realm": [
+      { "name": "viewer", "description": "Read-only access" },
+      { "name": "editor", "description": "Read + write" },
+      { "name": "admin", "description": "Full administrative access" }
+    ]
+  },
+  "groups": [
+    {
+      "name": "free-tier",
+      "realmRoles": ["viewer"]
+    },
+    {
+      "name": "pro-tier",
+      "realmRoles": ["viewer", "editor"]
+    },
+    {
+      "name": "enterprise-tier",
+      "realmRoles": ["viewer", "editor", "admin"]
+    }
+  ],
+  "users": [
+    {
+      "username": "demo-viewer",
+      "enabled": true,
+      "email": "viewer@regnant.local",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Viewer",
+      "credentials": [
+        { "type": "password", "value": "demo", "temporary": false }
+      ],
+      "groups": ["/free-tier"]
+    },
+    {
+      "username": "demo-editor",
+      "enabled": true,
+      "email": "editor@regnant.local",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Editor",
+      "credentials": [
+        { "type": "password", "value": "demo", "temporary": false }
+      ],
+      "groups": ["/pro-tier"]
+    },
+    {
+      "username": "demo-admin",
+      "enabled": true,
+      "email": "admin@regnant.local",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Admin",
+      "credentials": [
+        { "type": "password", "value": "demo", "temporary": false }
+      ],
+      "groups": ["/enterprise-tier"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "regnant-cli",
+      "name": "regnant developer CLI",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "true",
+        "use.refresh.tokens": "true"
+      },
+      "redirectUris": ["http://localhost:*"],
+      "webOrigins": ["+"]
+    },
+    {
+      "clientId": "backend-jira-clone",
+      "name": "Jira-clone backend",
+      "bearerOnly": true,
+      "publicClient": false,
+      "secret": "local-only-secret-jira"
+    },
+    {
+      "clientId": "backend-confluence-clone",
+      "name": "Confluence-clone backend",
+      "bearerOnly": true,
+      "publicClient": false,
+      "secret": "local-only-secret-confluence"
+    },
+    {
+      "clientId": "backend-bitbucket-clone",
+      "name": "Bitbucket-clone backend",
+      "bearerOnly": true,
+      "publicClient": false,
+      "secret": "local-only-secret-bitbucket"
+    }
+  ]
+}

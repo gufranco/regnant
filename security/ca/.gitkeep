@@ -1,0 +1,2 @@
+# Local CA cert + leaf certs are materialized by `tofu apply` from
+# the security Terraform module in Phase 4. Do not commit private keys.

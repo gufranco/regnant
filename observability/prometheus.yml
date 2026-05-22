@@ -1,0 +1,63 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: regnant-local
+    environment: local
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: otel-collector
+    static_configs:
+      - targets: ["otel-collector:8888"]
+
+  - job_name: envoy
+    metrics_path: /stats/prometheus
+    static_configs:
+      - targets:
+          - "envoy-1:9901"
+          - "envoy-2:9901"
+          - "envoy-3:9901"
+        labels:
+          tier: edge
+
+  - job_name: osb-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["osb-api:8080"]
+
+  - job_name: osb-worker
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["osb-worker:8080"]
+
+  - job_name: sovereign
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["sovereign:8080"]
+
+  - job_name: auth-sidecar
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["auth-sidecar:9191"]
+
+  - job_name: ratelimit
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["ratelimit:8081"]
+
+  - job_name: backends
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "backend-jira-clone:8080"
+          - "backend-confluence-clone:8080"
+          - "backend-bitbucket-clone:8080"
+
+  - job_name: keycloak
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["keycloak:8080"]
