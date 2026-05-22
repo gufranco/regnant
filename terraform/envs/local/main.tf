@@ -35,3 +35,15 @@ module "osb" {
   iam_role_names       = module.security.iam_role_names
   tags                 = local.common_tags
 }
+
+module "sovereign" {
+  source               = "../../modules/sovereign"
+  name_prefix          = "regnant"
+  region_label         = var.region_label
+  artifact_bucket_name = module.osb.artifact_bucket_name
+  leaf_secret_arns     = module.security.leaf_secret_arns
+  ca_secret_arns       = module.security.ca_secret_arns
+  kms_key_arns         = module.security.kms_key_arns
+  iam_role_names       = module.security.iam_role_names
+  tags                 = local.common_tags
+}
