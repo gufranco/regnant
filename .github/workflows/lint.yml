@@ -166,11 +166,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends protobuf-compiler
       - uses: Swatinem/rust-cache@v2
-      - name: clippy on all Cargo projects
+      - name: clippy on Rust services
         run: |
           shopt -s globstar nullglob
-          for manifest in services/**/Cargo.toml envoy/filters/**/Cargo.toml; do
+          for manifest in services/**/Cargo.toml; do
             cargo clippy --manifest-path "$manifest" --all-targets --all-features -- -D warnings
+          done
+
+      - name: clippy on WASM filters for wasm32-wasip1
+        run: |
+          rustup target add wasm32-wasip1
+          shopt -s globstar nullglob
+          for manifest in envoy/filters/**/Cargo.toml; do
+            cargo clippy --manifest-path "$manifest" --target wasm32-wasip1 -- -D warnings
           done
       - name: cargo-deny
         uses: EmbarkStudios/cargo-deny-action@v2

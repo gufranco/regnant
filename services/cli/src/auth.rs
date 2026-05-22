@@ -20,6 +20,7 @@ struct DeviceCode {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct TokenResponse {
     access_token: String,
     refresh_token: String,

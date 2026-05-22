@@ -59,18 +59,38 @@ def aws_env(moto_server: str, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture
-def s3_bucket(moto_server: str) -> str:
+def s3_bucket(moto_server: str) -> Iterator[str]:
     bucket = "regnant-osb-artifacts"
     client = boto3.client("s3", endpoint_url=moto_server, region_name="us-east-1")
-    client.create_bucket(Bucket=bucket)
-    return bucket
+    try:
+        client.create_bucket(Bucket=bucket)
+    except client.exceptions.BucketAlreadyOwnedByYou:
+        pass
+    yield bucket
+    objects = client.list_objects_v2(Bucket=bucket).get("Contents", [])
+    for obj in objects:
+        client.delete_object(Bucket=bucket, Key=obj["Key"])
+    try:
+        client.delete_bucket(Bucket=bucket)
+    except client.exceptions.ClientError:
+        pass
 
 
 @pytest.fixture
-def dynamodb_tables(moto_server: str) -> dict[str, str]:
+def dynamodb_tables(moto_server: str) -> Iterator[dict[str, str]]:
     client = boto3.client("dynamodb", endpoint_url=moto_server, region_name="us-east-1")
     instances = "regnant-service-instances"
     bindings = "regnant-service-bindings"
+
+    def _delete(name: str) -> None:
+        try:
+            client.delete_table(TableName=name)
+        except client.exceptions.ResourceNotFoundException:
+            return
+
+    _delete(instances)
+    _delete(bindings)
+
     client.create_table(
         TableName=instances,
         AttributeDefinitions=[
@@ -99,14 +119,28 @@ def dynamodb_tables(moto_server: str) -> dict[str, str]:
         ],
         BillingMode="PAY_PER_REQUEST",
     )
-    return {"instances": instances, "bindings": bindings}
+    yield {"instances": instances, "bindings": bindings}
+    _delete(instances)
+    _delete(bindings)
 
 
 @pytest.fixture
-def sqs_queues(moto_server: str) -> dict[str, str]:
+def sqs_queues(moto_server: str) -> Iterator[dict[str, str]]:
     client = boto3.client("sqs", endpoint_url=moto_server, region_name="us-east-1")
-    provision = client.create_queue(QueueName="regnant-provision-tasks")["QueueUrl"]
-    binding = client.create_queue(QueueName="regnant-binding-tasks")["QueueUrl"]
+
+    def _ensure(name: str) -> str:
+        try:
+            return client.create_queue(QueueName=name)["QueueUrl"]
+        except client.exceptions.QueueNameExists:
+            return client.get_queue_url(QueueName=name)["QueueUrl"]
+
+    provision = _ensure("regnant-provision-tasks")
+    binding = _ensure("regnant-binding-tasks")
     os.environ["OSB_PROVISION_QUEUE_URL"] = provision
     os.environ["OSB_BINDING_QUEUE_URL"] = binding
-    return {"provision": provision, "binding": binding}
+    yield {"provision": provision, "binding": binding}
+    for url in (provision, binding):
+        try:
+            client.delete_queue(QueueUrl=url)
+        except client.exceptions.ClientError:
+            pass

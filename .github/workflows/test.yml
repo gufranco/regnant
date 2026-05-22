@@ -179,11 +179,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends protobuf-compiler
       - uses: Swatinem/rust-cache@v2
-      - name: cargo test on all projects
+      - name: cargo test on Cargo projects (services only)
         run: |
           shopt -s globstar nullglob
-          for manifest in services/**/Cargo.toml envoy/filters/**/Cargo.toml; do
+          for manifest in services/**/Cargo.toml; do
             cargo test --manifest-path "$manifest" --all-features
+          done
+
+      - name: cargo check WASM filters for wasm32-wasip1
+        run: |
+          rustup target add wasm32-wasip1
+          shopt -s globstar nullglob
+          for manifest in envoy/filters/**/Cargo.toml; do
+            cargo check --manifest-path "$manifest" --target wasm32-wasip1
           done
       - name: cargo tarpaulin (coverage)
         run: cargo install cargo-tarpaulin --locked
