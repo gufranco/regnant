@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenTelemetry Collector agent (regnant)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=otel
+Group=otel
+EnvironmentFile=-/etc/envoy/env
+ExecStart=/usr/bin/otelcol-contrib --config /etc/otelcol-contrib/config.yaml
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=regnant CPU governor and IRQ pinning
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/regnant-irq-pin.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

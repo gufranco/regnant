@@ -1,0 +1,37 @@
+data_dir: /var/lib/vector
+
+sources:
+  systemd:
+    type: journald
+    include_units:
+      - envoy.service
+      - otel-collector-agent.service
+
+  envoy_access_log:
+    type: file
+    include:
+      - /var/log/envoy/access.log
+    read_from: end
+
+transforms:
+  add_service_label:
+    type: remap
+    inputs: [systemd, envoy_access_log]
+    source: |
+      .service = "envoy-fleet"
+      .region = get_env_var("ENVOY_REGION") ?? "us-east-1"
+      .node_id = get_env_var("ENVOY_NODE_ID") ?? "unknown"
+
+sinks:
+  loki_central:
+    type: loki
+    inputs: [add_service_label]
+    endpoint: ${LOKI_ENDPOINT:-http://loki:3100}
+    encoding:
+      codec: json
+    labels:
+      service: '{{ service }}'
+      region: '{{ region }}'
+      node_id: '{{ node_id }}'
+    healthcheck:
+      enabled: false

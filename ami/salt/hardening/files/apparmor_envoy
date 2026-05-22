@@ -1,0 +1,61 @@
+# AppArmor profile for the Envoy binary.
+#include <tunables/global>
+
+/usr/local/bin/envoy {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+  capability sys_resource,
+
+  /usr/local/bin/envoy mr,
+
+  # Configuration tree.
+  /etc/envoy/ r,
+  /etc/envoy/** r,
+  /etc/envoy/tls/ r,
+  /etc/envoy/tls/** r,
+
+  # Logging and runtime state.
+  /var/log/envoy/ w,
+  /var/log/envoy/** rw,
+  /var/lib/envoy/ w,
+  /var/lib/envoy/** rwk,
+
+  # Required reads.
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/nsswitch.conf r,
+  /etc/ssl/certs/ r,
+  /etc/ssl/certs/** r,
+
+  # Sysctls Envoy reads.
+  @{PROC}/sys/kernel/random/uuid r,
+  @{PROC}/cpuinfo r,
+  @{PROC}/meminfo r,
+  @{PROC}/loadavg r,
+  @{PROC}/uptime r,
+  @{PROC}/stat r,
+  @{PROC}/[0-9]*/cgroup r,
+  @{PROC}/[0-9]*/comm r,
+  @{PROC}/[0-9]*/limits r,
+
+  # Required network primitives.
+  network inet stream,
+  network inet6 stream,
+  network inet dgram,
+  network inet6 dgram,
+  network unix stream,
+  network unix dgram,
+  network netlink raw,
+
+  # No shell, no compilers, no package managers.
+  deny /bin/** x,
+  deny /sbin/** x,
+  deny /usr/bin/** x,
+  deny /usr/sbin/** x,
+  deny /usr/local/bin/!(envoy)** x,
+}

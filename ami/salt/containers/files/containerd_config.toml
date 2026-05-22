@@ -1,0 +1,46 @@
+# containerd config tuned for the regnant edge host.
+
+version = 2
+root = "/var/lib/containerd"
+state = "/run/containerd"
+oom_score = -999
+
+[grpc]
+  address = "/run/containerd/containerd.sock"
+  uid = 0
+  gid = 0
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+
+[debug]
+  address = "/run/containerd/debug.sock"
+  level = "info"
+
+[metrics]
+  address = "127.0.0.1:1338"
+  grpc_histogram = false
+
+[plugins."io.containerd.grpc.v1.cri"]
+  sandbox_image = "registry.k8s.io/pause:3.10"
+  enable_selinux = false
+  enable_unprivileged_ports = false
+  enable_unprivileged_icmp = false
+  disable_apparmor = false
+  disable_cgroup = false
+  disable_hugetlb_controller = false
+
+[plugins."io.containerd.grpc.v1.cri".containerd]
+  default_runtime_name = "crun"
+  snapshotter = "overlayfs"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.crun]
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.crun.options]
+    BinaryName = "/usr/bin/crun"
+    SystemdCgroup = true
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    BinaryName = "/usr/bin/runc"
+    SystemdCgroup = true

@@ -1,0 +1,70 @@
+# OTel Collector agent config on the Envoy host. Receives traces from
+# Envoy (Envoy access log + OTel tracing), scrapes the local Envoy
+# admin /stats/prometheus endpoint, and forwards everything upstream
+# to the central OTel collector.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 127.0.0.1:4317
+      http:
+        endpoint: 127.0.0.1:4318
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: envoy-local
+          scrape_interval: 15s
+          metrics_path: /stats/prometheus
+          static_configs:
+            - targets: ['127.0.0.1:9901']
+
+        - job_name: node-exporter
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['127.0.0.1:9100']
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 75
+    spike_limit_percentage: 25
+
+  resourcedetection:
+    detectors: [env, system, ec2]
+    timeout: 2s
+    override: false
+
+exporters:
+  otlp/central:
+    endpoint: ${OTEL_CENTRAL_ENDPOINT}
+    tls:
+      insecure: true
+
+extensions:
+  health_check:
+    endpoint: 127.0.0.1:13133
+
+service:
+  extensions: [health_check]
+  telemetry:
+    metrics:
+      address: 127.0.0.1:8888
+  pipelines:
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, batch, resourcedetection]
+      exporters: [otlp/central]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resourcedetection]
+      exporters: [otlp/central]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resourcedetection]
+      exporters: [otlp/central]

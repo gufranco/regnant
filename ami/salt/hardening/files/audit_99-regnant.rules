@@ -1,0 +1,39 @@
+# Audit rules. Covers identity changes, sudoers, audit log access,
+# kernel module load/unload, network interface changes, mount events,
+# and exec() of anything not on the AMI's expected path.
+
+# Identity changes
+-w /etc/passwd -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/sudoers -p wa -k identity
+-w /etc/sudoers.d -p wa -k identity
+-w /etc/security/opasswd -p wa -k identity
+
+# Audit log integrity
+-w /var/log/audit -p wa -k audit-log
+-w /etc/audit -p wa -k audit-config
+-w /etc/audisp -p wa -k audit-config
+
+# Kernel module operations
+-a always,exit -F arch=b64 -S init_module -S delete_module -S finit_module -k module-load
+-a always,exit -F arch=b32 -S init_module -S delete_module -S finit_module -k module-load
+
+# Network configuration
+-a always,exit -F arch=b64 -S sethostname -S setdomainname -k network-config
+-w /etc/issue -p wa -k network-config
+-w /etc/issue.net -p wa -k network-config
+-w /etc/hosts -p wa -k network-config
+-w /etc/sysconfig/network -p wa -k network-config
+
+# Mount events
+-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
+
+# Execve
+-a always,exit -F arch=b64 -S execve -k exec
+
+# Time changes
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -S clock_settime -k time-change
+
+# Lock the rules
+-e 2
