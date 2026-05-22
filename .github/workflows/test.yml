@@ -99,11 +99,11 @@ jobs:
       - name: bring up infra tier
         run: |
           cp .env.example .env
-          bash scripts/bootstrap.sh
+          make bootstrap
 
       - name: localstack health
         run: |
-          for i in {1..30}; do
+          for _ in $(seq 1 30); do
             curl -fsS http://localhost:4566/_localstack/health >/dev/null && exit 0
             sleep 2
           done
@@ -121,10 +121,35 @@ jobs:
         if: failure()
         run: docker compose logs --no-color | tail -500
 
+  discover:
+    name: discover language manifests
+    runs-on: ubuntu-24.04
+    outputs:
+      has_python: ${{ steps.scan.outputs.has_python }}
+      has_rust: ${{ steps.scan.outputs.has_rust }}
+      has_go: ${{ steps.scan.outputs.has_go }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: scan
+        run: |
+          shopt -s globstar nullglob
+          has_python=false
+          has_rust=false
+          has_go=false
+          for _ in services/**/pyproject.toml; do has_python=true; break; done
+          for _ in services/**/Cargo.toml envoy/filters/**/Cargo.toml; do has_rust=true; break; done
+          if [ -f tests/terratest/go.mod ]; then has_go=true; fi
+          {
+            echo "has_python=$has_python"
+            echo "has_rust=$has_rust"
+            echo "has_go=$has_go"
+          } >> "$GITHUB_OUTPUT"
+
   python-test:
     name: python tests
     runs-on: ubuntu-24.04
-    if: hashFiles('services/**/pyproject.toml') != ''
+    needs: discover
+    if: needs.discover.outputs.has_python == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -133,9 +158,9 @@ jobs:
           cache: pip
       - run: |
           for d in services/*/; do
-            if [ -f "$d/pyproject.toml" ]; then
-              pip install -e "$d[dev]"
-              pytest --cov="$d" --cov-report=xml --cov-fail-under=95 "$d/tests"
+            if [ -f "${d}/pyproject.toml" ]; then
+              pip install -e "${d}[dev]"
+              pytest --cov="${d}" --cov-report=xml --cov-fail-under=95 "${d}/tests"
             fi
           done
       - uses: codecov/codecov-action@v5
@@ -144,7 +169,8 @@ jobs:
   rust-test:
     name: rust tests
     runs-on: ubuntu-24.04
-    if: hashFiles('services/**/Cargo.toml') != ''
+    needs: discover
+    if: needs.discover.outputs.has_rust == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -166,8 +192,8 @@ jobs:
   terratest:
     name: terratest
     runs-on: ubuntu-24.04
-    needs: iac-validate
-    if: hashFiles('tests/terratest/go.mod') != ''
+    needs: [iac-validate, discover]
+    if: needs.discover.outputs.has_go == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5

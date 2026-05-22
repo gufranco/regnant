@@ -106,10 +106,35 @@ jobs:
       - run: pipx install yamllint
       - run: yamllint -c .yamllint.yaml .
 
+  discover:
+    name: discover language manifests
+    runs-on: ubuntu-24.04
+    outputs:
+      has_python: ${{ steps.scan.outputs.has_python }}
+      has_rust: ${{ steps.scan.outputs.has_rust }}
+      has_go: ${{ steps.scan.outputs.has_go }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: scan
+        run: |
+          shopt -s globstar nullglob
+          has_python=false
+          has_rust=false
+          has_go=false
+          for _ in services/**/pyproject.toml; do has_python=true; break; done
+          for _ in services/**/Cargo.toml envoy/filters/**/Cargo.toml; do has_rust=true; break; done
+          if [ -f tests/terratest/go.mod ]; then has_go=true; fi
+          {
+            echo "has_python=$has_python"
+            echo "has_rust=$has_rust"
+            echo "has_go=$has_go"
+          } >> "$GITHUB_OUTPUT"
+
   python-lint:
     name: python (ruff + mypy + pip-audit)
     runs-on: ubuntu-24.04
-    if: hashFiles('services/**/pyproject.toml') != ''
+    needs: discover
+    if: needs.discover.outputs.has_python == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -129,7 +154,8 @@ jobs:
   rust-lint:
     name: rust (clippy + cargo-deny)
     runs-on: ubuntu-24.04
-    if: hashFiles('services/**/Cargo.toml') != ''
+    needs: discover
+    if: needs.discover.outputs.has_rust == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -152,7 +178,8 @@ jobs:
   go-lint:
     name: go (vet + govulncheck)
     runs-on: ubuntu-24.04
-    if: hashFiles('tests/terratest/go.mod') != ''
+    needs: discover
+    if: needs.discover.outputs.has_go == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
