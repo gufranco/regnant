@@ -1,0 +1,69 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "group:allNonMajor",
+    "schedule:weekly"
+  ],
+  "timezone": "America/Sao_Paulo",
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"]
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": false,
+    "schedule": []
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major"]
+    },
+    {
+      "matchPackagePatterns": ["^envoyproxy/"],
+      "groupName": "envoy"
+    },
+    {
+      "matchPackagePatterns": ["^localstack/"],
+      "groupName": "localstack"
+    },
+    {
+      "matchPackagePatterns": ["^grafana/", "^prom/", "^otel/"],
+      "groupName": "observability"
+    }
+  ],
+  "terraform": {
+    "enabled": true
+  },
+  "dockerfile": {
+    "enabled": true
+  },
+  "docker-compose": {
+    "enabled": true
+  },
+  "pip_requirements": {
+    "enabled": true
+  },
+  "cargo": {
+    "enabled": true
+  },
+  "gomod": {
+    "enabled": true
+  }
+}

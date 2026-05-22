@@ -1,0 +1,122 @@
+# Terraform / OpenTofu
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+.terraform.lock.hcl.local
+
+# Packer
+packer_cache/
+*.box
+manifest.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+coverage.xml
+*.cover
+.cache
+nosetests.xml
+.python-version
+.venv/
+venv/
+ENV/
+
+# Rust
+target/
+Cargo.lock.bak
+**/*.rs.bk
+*.pdb
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# Docker
+.docker/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets / local
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+!cosign.pub
+secrets/
+.secrets/
+
+# LocalStack
+.localstack/
+volume/
+
+# Coverage / artifacts
+coverage/
+*.lcov
+.nyc_output/
+*.log
+
+# Generated
+*.sbom.json
+*.sbom.spdx.json
+generated/

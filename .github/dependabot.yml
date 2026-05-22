@@ -1,0 +1,52 @@
+# Dependabot as a fallback to Renovate. Both run; Renovate handles most updates,
+# Dependabot covers GitHub Actions and security alerts on a tighter cadence.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - ci
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - docker
+
+  - package-ecosystem: pip
+    directory: /services/osb
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pip
+    directory: /services/sovereign
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: cargo
+    directory: /services/auth-sidecar
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: cargo
+    directory: /services/cli
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: gomod
+    directory: /tests/terratest
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: terraform
+    directory: /terraform/envs/local
+    schedule:
+      interval: weekly
