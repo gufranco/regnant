@@ -28,13 +28,15 @@ RUN ARCH="$(dpkg --print-architecture)" \
         arm64) ENVOY_ARCH=arm64; GO_ARCH=arm64 ;; \
         *) echo "unsupported arch $ARCH" >&2; exit 1 ;; \
     esac \
-    && curl -fsSL "https://github.com/tetratelabs/archive-envoy/releases/download/${ENVOY_VERSION}/envoy-${ENVOY_VERSION}-linux-${ENVOY_ARCH}.tar.xz" -o envoy.tar.xz \
-    && tar -xJf envoy.tar.xz \
-    && cp "$(find . -maxdepth 3 -type f -name envoy | head -n1)" /opt/build/envoy \
+    && curl -fsSL "https://github.com/tetratelabs/archive-envoy/releases/download/${ENVOY_VERSION}/envoy-${ENVOY_VERSION}-linux-${ENVOY_ARCH}.tar.xz" -o /tmp/envoy.tar.xz \
+    && tar -xJf /tmp/envoy.tar.xz -C /tmp \
+    && cp "$(find /tmp -maxdepth 4 -type f -name envoy | head -n1)" /opt/build/envoy \
     && chmod +x /opt/build/envoy \
-    && curl -fsSL "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTEL_VERSION}/otelcol-contrib_${OTEL_VERSION}_linux_${GO_ARCH}.tar.gz" -o otelcol.tgz \
-    && tar -xzf otelcol.tgz \
-    && cp otelcol-contrib /opt/build/otelcol-contrib
+    && curl -fsSL "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTEL_VERSION}/otelcol-contrib_${OTEL_VERSION}_linux_${GO_ARCH}.tar.gz" -o /tmp/otelcol.tgz \
+    && tar -xzf /tmp/otelcol.tgz -C /tmp \
+    && cp /tmp/otelcol-contrib /opt/build/otelcol-contrib \
+    && chmod +x /opt/build/otelcol-contrib \
+    && rm -rf /tmp/envoy.tar.xz /tmp/otelcol.tgz
 
 FROM gcr.io/distroless/cc-debian12:nonroot
 
