@@ -28,7 +28,7 @@ jobs:
           - cli: terraform
             version: "1.5.7"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - if: matrix.cli == 'opentofu'
         uses: opentofu/setup-opentofu@v1
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: iac-validate
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: docker/setup-buildx-action@v3
 
@@ -131,7 +131,7 @@ jobs:
       has_rust: ${{ steps.scan.outputs.has_rust }}
       has_go: ${{ steps.scan.outputs.has_go }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: scan
         run: |
           shopt -s globstar nullglob
@@ -153,7 +153,7 @@ jobs:
     needs: discover
     if: needs.discover.outputs.has_python == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -174,7 +174,7 @@ jobs:
     needs: discover
     if: needs.discover.outputs.has_rust == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - name: install protoc
         run: |
@@ -222,7 +222,7 @@ jobs:
           --health-timeout 5s
           --health-retries 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with:
           go-version: "1.24"
