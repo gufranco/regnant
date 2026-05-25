@@ -20,7 +20,7 @@ jobs:
     name: pre-commit (all hooks)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -61,7 +61,7 @@ jobs:
     name: opentofu/terraform fmt
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: "1.12.0"
@@ -76,7 +76,7 @@ jobs:
     name: shellcheck
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ludeeus/action-shellcheck@2.0.0
         env:
           SHELLCHECK_OPTS: -e SC1091
@@ -85,14 +85,14 @@ jobs:
     name: actionlint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: raven-actions/actionlint@v2
 
   hadolint:
     name: hadolint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           recursive: true
@@ -102,7 +102,7 @@ jobs:
     name: yamllint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: pipx install yamllint
       - run: yamllint -c .yamllint.yaml .
 
@@ -114,7 +114,7 @@ jobs:
       has_rust: ${{ steps.scan.outputs.has_rust }}
       has_go: ${{ steps.scan.outputs.has_go }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: scan
         run: |
           shopt -s globstar nullglob
@@ -136,7 +136,7 @@ jobs:
     needs: discover
     if: needs.discover.outputs.has_python == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -157,7 +157,7 @@ jobs:
     needs: discover
     if: needs.discover.outputs.has_rust == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -193,7 +193,7 @@ jobs:
     needs: discover
     if: needs.discover.outputs.has_go == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with:
           go-version: "1.24"
