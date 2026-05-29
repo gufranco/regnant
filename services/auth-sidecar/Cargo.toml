@@ -16,7 +16,7 @@ tokio = { version = "1.42", features = ["full"] }
 tonic = "0.12"
 prost = "0.13"
 prost-types = "0.13"
-envoy-types = "0.5"
+envoy-types = "0.7"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 jsonwebtoken = "9.3"
