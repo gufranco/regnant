@@ -24,7 +24,7 @@ tabled = "0.16"
 keyring = "3.5"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-uuid = { version = "1.11", features = ["v4"] }
+uuid = { version = "1.23", features = ["v4"] }
 base64 = "0.22"
 
 [dev-dependencies]
