@@ -738,12 +738,12 @@ Grafana at <http://localhost:3000> is the entry point.
 
 **Logs (Loki).** Useful filters:
 
-| Filter                    | What it surfaces          |
-| ------------------------- | ------------------------- | --------------------- | ---------------- |
-| `{service="osb-worker"}`  | Worker dispatch decisions |
-| `{service="auth-sidecar"} | json                      | level="warn"`         | Token rejections |
-| `{service="envoy-fleet"}  | json                      | duration > 1s`        | Slow requests    |
-| `{service="envoy-fleet"}  | json                      | response_code >= 500` | Edge errors      |
+| Filter                                                    | What it surfaces          |
+| --------------------------------------------------------- | ------------------------- |
+| `{service="osb-worker"}`                                  | Worker dispatch decisions |
+| `{service="auth-sidecar"} \| json \| level="warn"`        | Token rejections          |
+| `{service="envoy-fleet"} \| json \| duration > 1s`        | Slow requests             |
+| `{service="envoy-fleet"} \| json \| response_code >= 500` | Edge errors               |
 
 **Metrics (Prometheus).**
 
