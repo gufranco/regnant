@@ -165,7 +165,7 @@ jobs:
               pytest --cov="${d}" --cov-report=xml --cov-fail-under=0 "${d}/tests"
             fi
           done
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         if: always()
 
   rust-test:
