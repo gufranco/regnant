@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.45
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.59.2
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.316.1
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.105.1
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.105.2
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.44.2
 	github.com/gruntwork-io/terratest v0.47.2
 	github.com/stretchr/testify v1.11.1
