@@ -76,6 +76,7 @@ jobs:
         with:
           working_directory: terraform/
           soft_fail: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: checkov
         uses: bridgecrewio/checkov-action@master
