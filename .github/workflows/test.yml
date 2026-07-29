@@ -15,6 +15,9 @@ concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GO_VERSION: "1.26"
+
 jobs:
   iac-validate:
     name: ${{ matrix.cli }} validate
@@ -62,7 +65,9 @@ jobs:
         uses: terraform-linters/setup-tflint@v6
         with:
           tflint_version: latest
-      - run: |
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           tflint --init
           tflint --recursive --config "$(pwd)/.tflint.hcl"
 
@@ -71,6 +76,7 @@ jobs:
         with:
           working_directory: terraform/
           soft_fail: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: checkov
         uses: bridgecrewio/checkov-action@master
@@ -225,7 +231,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: tests/terratest/go.sum
       - uses: opentofu/setup-opentofu@v1
         with:
