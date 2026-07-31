@@ -71,12 +71,12 @@ jobs:
           tflint --init
           tflint --recursive --config "$(pwd)/.tflint.hcl"
 
-      - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
+      - name: trivy config scan
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-          working_directory: terraform/
-          soft_fail: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          scan-type: config
+          scan-ref: terraform/
+          exit-code: "0"
 
       - name: checkov
         uses: bridgecrewio/checkov-action@master
