@@ -15,5 +15,5 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 
 COPY --from=builder /build/target/release/regnant /usr/local/bin/regnant
 
-USER nonroot
+USER 65532:65532
 ENTRYPOINT ["/usr/local/bin/regnant"]
