@@ -19,7 +19,7 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 COPY --from=builder /build/steward/target/release/steward /usr/local/bin/steward
 COPY config /data/ratelimit/config
 
-USER nonroot
+USER 65532:65532
 EXPOSE 8081
 ENV RUNTIME_ROOT=/data \
     RUNTIME_SUBDIRECTORY=ratelimit \

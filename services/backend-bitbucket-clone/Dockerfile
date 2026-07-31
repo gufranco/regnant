@@ -24,6 +24,6 @@ COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /build/app /app/app
 
 WORKDIR /app
-USER nonroot
+USER 65532:65532
 EXPOSE 8080
 ENTRYPOINT ["/opt/venv/bin/python", "-m", "app.main"]

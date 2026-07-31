@@ -15,6 +15,6 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 
 COPY --from=builder /build/target/release/auth-sidecar /auth-sidecar
 
-USER nonroot
+USER 65532:65532
 EXPOSE 9191
 ENTRYPOINT ["/auth-sidecar"]

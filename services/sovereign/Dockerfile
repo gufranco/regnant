@@ -34,6 +34,6 @@ COPY templates /etc/sovereign/templates
 COPY plugins /etc/sovereign/plugins
 
 WORKDIR /etc/sovereign
-USER nonroot
+USER 65532:65532
 EXPOSE 8080
 ENTRYPOINT ["/opt/venv/bin/python", "-m", "uvicorn", "sovereign.app:app", "--host", "0.0.0.0", "--port", "8080"]
