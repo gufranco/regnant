@@ -25,7 +25,7 @@ keyring = "4"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1.11", features = ["v4"] }
-base64 = "0.22"
+base64 = "0.23"
 
 [dev-dependencies]
 wiremock = "0.6"
