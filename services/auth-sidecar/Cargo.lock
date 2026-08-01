@@ -157,9 +157,9 @@ checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 
 [[package]]
 name = "envoy-types"
-version = "0.7.5"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37abf079717ace2178cabfee5486d68622c0142dfc7de46be59186e9046b2ad6"
+checksum = "024ea6b061ed2fd23eba328acad416128b4f3a4bf823d8c8a48e0f7bfc3e7ac6"
 dependencies = [
  "futures-core",
  "prost",
