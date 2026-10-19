@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security issue in `regnant`, do **not** open a public GitHub issue. Email the maintainer privately at the address in `CODEOWNERS`, or use GitHub's private vulnerability reporting at https://github.com/gufranco/regnant/security/advisories/new.
+If you discover a security issue in `regnant`, do **not** open a public GitHub issue. Report it through GitHub's private vulnerability reporting at https://github.com/gufranco/regnant/security/advisories/new.
 
 You should receive a response within 72 hours. We will work with you to confirm the issue, plan a fix, and coordinate disclosure.
 
