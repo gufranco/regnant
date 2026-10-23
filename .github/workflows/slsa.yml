@@ -1,0 +1,46 @@
+name: slsa
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: An existing release tag to attest, such as v1.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slsa-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  slsa:
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+      packages: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    strategy:
+      matrix:
+        image:
+          - ghcr.io/gufranco/regnant/envoy-fleet
+          - ghcr.io/gufranco/regnant/osb-api
+          - ghcr.io/gufranco/regnant/osb-worker
+          - ghcr.io/gufranco/regnant/sovereign
+          - ghcr.io/gufranco/regnant/auth-sidecar
+          - ghcr.io/gufranco/regnant/ratelimit
+          - ghcr.io/gufranco/regnant/backend-jira-clone
+          - ghcr.io/gufranco/regnant/backend-confluence-clone
+          - ghcr.io/gufranco/regnant/backend-bitbucket-clone
+          - ghcr.io/gufranco/regnant/cli
+    with:
+      image: ${{ matrix.image }}
+      digest: ""
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

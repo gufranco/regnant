@@ -7,10 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
-  id-token: write
-  packages: write
-  attestations: write
+  contents: read
 
 concurrency:
   group: release
@@ -82,40 +79,3 @@ jobs:
           semantic_version: 25.0.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  gate:
-    name: A release was published
-    needs: release
-    if: needs.release.outputs.published == 'true'
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - run: echo "a new release was published; attesting the images"
-
-  slsa:
-    needs: gate
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
-    strategy:
-      matrix:
-        image:
-          - ghcr.io/gufranco/regnant/envoy-fleet
-          - ghcr.io/gufranco/regnant/osb-api
-          - ghcr.io/gufranco/regnant/osb-worker
-          - ghcr.io/gufranco/regnant/sovereign
-          - ghcr.io/gufranco/regnant/auth-sidecar
-          - ghcr.io/gufranco/regnant/ratelimit
-          - ghcr.io/gufranco/regnant/backend-jira-clone
-          - ghcr.io/gufranco/regnant/backend-confluence-clone
-          - ghcr.io/gufranco/regnant/backend-bitbucket-clone
-          - ghcr.io/gufranco/regnant/cli
-    with:
-      image: ${{ matrix.image }}
-      digest: ""
-      registry-username: ${{ github.actor }}
-    secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}
