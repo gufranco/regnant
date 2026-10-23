@@ -1,36 +1,87 @@
 name: release
 
 on:
-  push:
-    tags: ["v*"]
-  workflow_dispatch:
+  workflow_run:
+    workflows: [build, test, lint]
+    types: [completed]
+    branches: [main]
 
-permissions:
-  contents: write
-  id-token: write
-  packages: write
-  attestations: write
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  release:
+  ready:
+    name: Ready to release
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Build, test and lint all passed for the commit main still holds
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          latest() {
+            gh api "repos/$REPO/actions/workflows/$1/runs?head_sha=$SHA&event=push" \
+              --jq '.workflow_runs | sort_by(.run_number) | last
+                    | if . == null then "none" else "\(.status)/\(.conclusion)" end'
+          }
+          head="$(gh api "repos/$REPO/commits/main" --jq .sha)"
+          build="$(latest build.yml)"
+          test="$(latest test.yml)"
+          lint="$(latest lint.yml)"
+          echo "main $head; build $build, test $test, lint $lint for $SHA"
+          ready=false
+          if [ "$head" = "$SHA" ] \
+            && [ "$build" = "completed/success" ] \
+            && [ "$test" = "completed/success" ] \
+            && [ "$lint" = "completed/success" ]; then
+            ready=true
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+  release:
+    name: Version and publish
+    needs: ready
+    if: needs.ready.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      published: ${{ steps.semrel.outputs.new_release_published }}
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: actions/create-release@v1
+      - name: Run semantic-release
+        id: semrel
+        uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90  # v6.0.0
+        with:
+          semantic_version: 25.0.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-        continue-on-error: true
 
   slsa:
     needs: release
+    if: needs.release.outputs.published == 'true'
     permissions:
       id-token: write
       contents: write
