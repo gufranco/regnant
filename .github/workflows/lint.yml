@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: hadolint/hadolint-action@v3.4.0
+      - uses: hadolint/hadolint-action@v3.5.0
         with:
           recursive: true
           ignore: DL3008,DL3018
