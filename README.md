@@ -4,15 +4,13 @@
 
 **A production-grade, end-to-end reproduction of the Atlassian internal platform that Vasilios Syrakis described in his 2026 YouTube videos. Envoy fleet on AWS, dynamic XDS control plane, Open Service Broker self-service, full mTLS mesh, OIDC, OpenTelemetry, and a Packer + SaltStack AMI build, all running locally on LocalStack.**
 
-[![Build](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/build.yml?branch=main&label=build&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/build.yml)
-[![Lint](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/lint.yml?branch=main&label=lint&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/lint.yml)
-[![Test](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/test.yml?branch=main&label=test&style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/test.yml)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](LICENSE)
-[![OpenTofu](https://img.shields.io/badge/OpenTofu-1.10+-7B42BC?style=flat-square)](https://opentofu.org/)
-[![Envoy](https://img.shields.io/badge/Envoy-v1.34-AC6199?style=flat-square)](https://www.envoyproxy.io/)
-[![LocalStack](https://img.shields.io/badge/LocalStack-4.x-4D29B4?style=flat-square)](https://localstack.cloud/)
-[![cosign](https://img.shields.io/badge/cosign-signed-3EBA17?style=flat-square)](https://www.sigstore.dev/)
-[![SLSA](https://img.shields.io/badge/SLSA-Level_2-1E90FF?style=flat-square)](https://slsa.dev/)
+[![build](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/build.yml?branch=main&style=flat-square&label=build)](https://github.com/gufranco/regnant/actions/workflows/build.yml)
+[![lint](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/lint.yml?branch=main&style=flat-square&label=lint)](https://github.com/gufranco/regnant/actions/workflows/lint.yml)
+[![slsa](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/slsa.yml?branch=main&style=flat-square&label=slsa)](https://github.com/gufranco/regnant/actions/workflows/slsa.yml)
+[![test](https://img.shields.io/github/actions/workflow/status/gufranco/regnant/test.yml?branch=main&style=flat-square&label=test)](https://github.com/gufranco/regnant/actions/workflows/test.yml)
+[![release](https://img.shields.io/github/v/release/gufranco/regnant?style=flat-square&label=release)](https://github.com/gufranco/regnant/releases/latest)
+[![coverage](https://img.shields.io/badge/coverage-95%25-brightgreen?style=flat-square)](https://github.com/gufranco/regnant/actions/workflows/build.yml)
+[![license](https://img.shields.io/github/license/gufranco/regnant?style=flat-square&label=license)](LICENSE)
 
 **8** Terraform modules · **19** containers · **5** Salt states · **17** decisions documented · **9** runbooks · **3** WASM filters · **mTLS everywhere** · **boots in ~5 minutes**
 
