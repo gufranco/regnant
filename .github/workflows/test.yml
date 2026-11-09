@@ -216,7 +216,7 @@ jobs:
     if: needs.discover.outputs.has_go == 'true'
     services:
       localstack:
-        image: localstack/localstack:4.0
+        image: localstack/localstack:4.14
         ports:
           - 4566:4566
         env:
