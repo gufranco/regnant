@@ -18,8 +18,12 @@ resource "aws_dynamodb_table" "service_instances" {
 
   global_secondary_index {
     name            = "by-state"
-    hash_key        = "state"
     projection_type = "ALL"
+
+    key_schema {
+      attribute_name = "state"
+      key_type       = "HASH"
+    }
   }
 
   point_in_time_recovery {
@@ -61,8 +65,12 @@ resource "aws_dynamodb_table" "service_bindings" {
 
   global_secondary_index {
     name            = "by-instance"
-    hash_key        = "instance_id"
     projection_type = "ALL"
+
+    key_schema {
+      attribute_name = "instance_id"
+      key_type       = "HASH"
+    }
   }
 
   point_in_time_recovery {
