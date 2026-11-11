@@ -1,69 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    "group:allNonMajor",
-    "schedule:weekly"
-  ],
-  "timezone": "America/Sao_Paulo",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["github-actions"],
+  "dependencyDashboard": false,
+  "schedule": ["before 6am on monday"],
+  "timezone": "Etc/UTC",
   "labels": ["dependencies"],
-  "prConcurrentLimit": 5,
-  "rangeStrategy": "bump",
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["before 5am on monday"]
-  },
-  "vulnerabilityAlerts": {
-    "labels": ["security"],
-    "automerge": false,
-    "schedule": []
-  },
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
-      "automergeType": "branch"
+      "matchManagers": ["github-actions"],
+      "enabled": false
     },
     {
-      "matchUpdateTypes": ["minor"],
-      "automerge": false
-    },
-    {
-      "matchUpdateTypes": ["major"],
-      "automerge": false,
-      "labels": ["dependencies", "major"]
-    },
-    {
-      "matchPackagePatterns": ["^envoyproxy/"],
-      "groupName": "envoy"
-    },
-    {
-      "matchPackagePatterns": ["^localstack/"],
-      "groupName": "localstack"
-    },
-    {
-      "matchPackagePatterns": ["^grafana/", "^prom/", "^otel/"],
-      "groupName": "observability"
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["github-runner"],
+      "enabled": true,
+      "semanticCommitType": "ci"
     }
-  ],
-  "terraform": {
-    "enabled": true
-  },
-  "dockerfile": {
-    "enabled": true
-  },
-  "docker-compose": {
-    "enabled": true
-  },
-  "pip_requirements": {
-    "enabled": true
-  },
-  "cargo": {
-    "enabled": true
-  },
-  "gomod": {
-    "enabled": true
-  }
+  ]
 }
