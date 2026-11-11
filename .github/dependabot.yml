@@ -60,6 +60,10 @@ updates:
     directory: /tests/terratest
     schedule:
       interval: weekly
+    groups:
+      aws-sdk-go-v2:
+        patterns:
+          - github.com/aws/*
 
   - package-ecosystem: terraform
     directories:
@@ -67,3 +71,8 @@ updates:
       - /terraform/modules/*
     schedule:
       interval: weekly
+    groups:
+      terraform-providers:
+        group-by: dependency-name
+        patterns:
+          - "*"
