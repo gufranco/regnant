@@ -96,7 +96,7 @@ services:
     cpus: 2.0
 
   redis:
-    image: redis:7.4.1-alpine
+    image: redis:8.10.2-alpine
     container_name: regnant-redis
     <<: [*common-restart, *common-security, *common-logging]
     command:
