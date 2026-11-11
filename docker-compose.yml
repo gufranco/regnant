@@ -215,7 +215,7 @@ services:
     user: "10001:10001"
 
   prometheus:
-    image: prom/prometheus:v3.0.1
+    image: prom/prometheus:v3.16.0
     container_name: regnant-prometheus
     <<: [*common-restart, *common-logging]
     command:
