@@ -2,7 +2,7 @@
 name = "regnant-auth-sidecar"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.83"
+rust-version = "1.95"
 license = "Apache-2.0"
 description = "Envoy ext_authz sidecar that validates JWTs against Keycloak"
 repository = "https://github.com/gufranco/regnant"
