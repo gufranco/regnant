@@ -45,7 +45,7 @@ jobs:
 
       - uses: sigstore/cosign-installer@v4.1.3
         with:
-          cosign-release: v2.4.1
+          cosign-release: v2.6.5
 
       - name: Sign with OIDC (keyless)
         continue-on-error: true

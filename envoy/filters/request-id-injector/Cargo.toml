@@ -10,9 +10,9 @@ description = "Envoy WASM HTTP filter that ensures W3C trace context and a stabl
 crate-type = ["cdylib"]
 
 [dependencies]
-proxy-wasm = "0.2"
-log = "0.4"
-uuid = { version = "1.11", default-features = false, features = ["v4", "fast-rng"] }
+proxy-wasm = "0.2.5"
+log = "0.4.35"
+uuid = { version = "1.29.2", default-features = false, features = ["v4", "fast-rng"] }
 
 [profile.release]
 opt-level = "z"

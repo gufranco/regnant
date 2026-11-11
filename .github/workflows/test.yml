@@ -97,11 +97,11 @@ jobs:
 
       - uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: "1.12.0"
+          tofu_version: "v1.13.9"
 
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.15.2"
 
       - name: bring up infra tier (LocalStack, Redis, Keycloak)
         run: |
@@ -162,7 +162,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.15.2"
           cache: pip
       - run: |
           for d in services/*/; do
@@ -235,7 +235,7 @@ jobs:
           cache-dependency-path: tests/terratest/go.sum
       - uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: "1.12.0"
+          tofu_version: "v1.13.9"
       - working-directory: tests/terratest
         run: |
           go mod download

@@ -12,23 +12,23 @@ name = "regnant"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "4.5", features = ["derive", "env"] }
-reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
-tokio = { version = "1.42", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_yaml = "0.9"
-anyhow = "1.0"
-thiserror = "2.0"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls-tls"] }
+tokio = { version = "1.54.1", features = ["full"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+serde_yaml = "0.9.34"
+anyhow = "1.0.104"
+thiserror = "2.0.21"
 tabled = "0.22"
-keyring = "4"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-uuid = { version = "1.11", features = ["v4"] }
-base64 = "0.23"
+keyring = "4.2.0"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+uuid = { version = "1.29.2", features = ["v4"] }
+base64 = "0.23.1"
 
 [dev-dependencies]
-wiremock = "0.6"
+wiremock = "0.6.5"
 
 [profile.release]
 lto = "thin"

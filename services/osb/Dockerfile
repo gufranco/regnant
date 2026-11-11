@@ -2,7 +2,7 @@
 # fat image, copy the resolved tree into a distroless final stage.
 
 # hadolint global ignore=DL3008,DL3018
-ARG PYTHON_VERSION=3.13-slim-bookworm
+ARG PYTHON_VERSION=3.15-slim-bookworm
 
 FROM python:${PYTHON_VERSION} AS builder
 

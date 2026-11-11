@@ -9,18 +9,18 @@ description = "Confluence-clone backend example for the regnant platform"
 requires-python = ">=3.13"
 license = { text = "Apache-2.0" }
 dependencies = [
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
-    "pydantic>=2.9.0",
+    "fastapi>=0.162.4",
+    "uvicorn[standard]>=0.54.0",
+    "pydantic>=2.14.3",
     "structlog>=24.4.0",
-    "prometheus-fastapi-instrumentator>=7.0.0",
-    "opentelemetry-instrumentation-fastapi>=0.49b0",
-    "opentelemetry-exporter-otlp-proto-grpc>=1.28.0",
-    "opentelemetry-sdk>=1.28.0",
+    "prometheus-fastapi-instrumentator>=7.1.0",
+    "opentelemetry-instrumentation-fastapi>=0.49b2",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.45.2",
+    "opentelemetry-sdk>=1.45.2",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.3.0", "httpx>=0.28.0", "pytest-cov>=6.0.0"]
+dev = ["pytest>=8.4.2", "httpx>=0.28.1", "pytest-cov>=6.3.0"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
