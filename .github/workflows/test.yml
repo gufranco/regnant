@@ -119,6 +119,16 @@ jobs:
           docker compose logs localstack | tail -50
           exit 1
 
+      - name: loki health
+        run: |
+          for _ in $(seq 1 30); do
+            curl -fsS http://localhost:3100/ready >/dev/null && exit 0
+            sleep 2
+          done
+          echo "loki failed health" >&2
+          docker compose logs loki | tail -50
+          exit 1
+
       - name: tofu apply (no modules wired yet; skip)
         working-directory: terraform/envs/local
         run: |
