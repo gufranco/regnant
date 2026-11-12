@@ -243,7 +243,7 @@ services:
     user: "65534:65534"
 
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:13.3.0
     container_name: regnant-grafana
     <<: [*common-restart, *common-logging]
     environment:
