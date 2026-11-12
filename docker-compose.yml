@@ -193,7 +193,7 @@ services:
       - SETGID
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.115.1
+    image: otel/opentelemetry-collector-contrib:0.165.0
     container_name: regnant-otel-collector
     <<: [*common-restart, *common-security, *common-logging]
     command: ["--config=/etc/otel-collector.yaml"]
