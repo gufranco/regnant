@@ -5,7 +5,7 @@
 ARG ENVOY_VERSION=v1.34.1
 ARG OTEL_VERSION=0.115.1
 
-FROM debian:12-slim AS builder
+FROM debian:13-slim AS builder
 
 ARG ENVOY_VERSION
 ARG OTEL_VERSION
