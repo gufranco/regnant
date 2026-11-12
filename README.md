@@ -104,7 +104,7 @@ Eight Terraform modules under [`terraform/modules/`](terraform/modules) carry th
 | **WASM filters**        | Three Rust crates compiled to `wasm32-wasi`: `header-rewriter` (config-driven response header mutation), `ab-router` (deterministic split by xxh3 hash of a configurable request header), `request-id-injector` (W3C `traceparent` + stable `x-request-id`).                                                    |
 | **mTLS**                | Local CA in the security module mints per-service leaf certs stored in Secrets Manager. Sovereign serves them via SDS. Every mesh service presents a leaf on outbound and validates upstream certs.                                                                                                             |
 | **Crypto at rest**      | Five KMS customer-managed keys (S3, DynamoDB, SQS, Secrets Manager envelope, CloudWatch Logs), rotation enabled, aliases per purpose. S3 bucket policies reject plaintext HTTP and uploads without `aws:kms` SSE.                                                                                               |
-| **Observability**       | OpenTelemetry Collector + Prometheus 3 + Grafana 11 + Loki 3 + Tempo 3 + Promtail. Pre-provisioned dashboards: Envoy fleet, OSB, Sovereign XDS, per-backend comparison, SLO burn rate. Alert rules at [`observability/prometheus_rules/slo-burn.yml`](observability/prometheus_rules/slo-burn.yml).             |
+| **Observability**       | OpenTelemetry Collector + Prometheus 3 + Grafana 13 + Loki 3 + Tempo 3 + Promtail. Pre-provisioned dashboards: Envoy fleet, OSB, Sovereign XDS, per-backend comparison, SLO burn rate. Alert rules at [`observability/prometheus_rules/slo-burn.yml`](observability/prometheus_rules/slo-burn.yml).             |
 | **Container baseline**  | Every image: distroless or chainguard final stage, non-root UID >= 10000, `cap_drop: ALL`, explicit `cap_add` only where required, `no-new-privileges:true`, read-only root with tmpfs for ephemeral writes, multi-arch buildx (`linux/amd64` + `linux/arm64`).                                                 |
 | **Supply chain**        | Cosign keyless OIDC signing in CI plus a keyed fallback. syft SPDX SBOMs per image. Trivy with `HIGH,CRITICAL --exit-code 1`. SLSA Level 2 provenance on tagged releases. Renovate + Dependabot for dependencies.                                                                                               |
 | **Tests**               | Terratest (Go) for IaC modules. pytest E2E for the provisioning flow, bind/unbind, OIDC, mTLS, WASM filters. k6 smoke + sustained load with p50/p95/p99 SLO thresholds. Chaos test that kills a random Envoy and asserts recovery in under 30 s.                                                                |
@@ -293,7 +293,7 @@ Threat model and full control inventory in decisions D15 and D16 below.
 
 ## Observability
 
-The OpenTelemetry pipeline ingests OTLP from every service and fans out by signal type: Prometheus 3 for metrics via remote-write, Loki 3 for logs via the loki exporter, Tempo 3 for traces. Grafana 11 is the single pane with provisioned datasources and trace-to-logs + trace-to-metrics correlations. Per-host OTel collector agents on the Envoy AMI offload buffering.
+The OpenTelemetry pipeline ingests OTLP from every service and fans out by signal type: Prometheus 3 for metrics via remote-write, Loki 3 for logs via the loki exporter, Tempo 3 for traces. Grafana 13 is the single pane with provisioned datasources and trace-to-logs + trace-to-metrics correlations. Per-host OTel collector agents on the Envoy AMI offload buffering.
 
 ### SLOs
 
@@ -372,7 +372,7 @@ Seventeen decisions taken deliberately during the build. Each captures context, 
 
 **Context.** The platform needs metrics, logs, and traces from every service.
 
-**Decision.** Run a complete OTel pipeline in docker-compose: OpenTelemetry Collector (contrib) receives OTLP from every service, fans out to Prometheus 3 for metrics, Loki 3 for logs (via Promtail tailing container logs), and Tempo 3 for traces. Grafana 11 sits over all three with provisioned datasources and dashboards.
+**Decision.** Run a complete OTel pipeline in docker-compose: OpenTelemetry Collector (contrib) receives OTLP from every service, fans out to Prometheus 3 for metrics, Loki 3 for logs (via Promtail tailing container logs), and Tempo 3 for traces. Grafana 13 sits over all three with provisioned datasources and dashboards.
 
 **Alternatives.** Logs + metrics only (~3 fewer containers; but drops tracing, the most useful signal for a mesh of this shape). Bespoke, no OTel (simpler per service; but every language re-implements the plumbing, no portability).
 
