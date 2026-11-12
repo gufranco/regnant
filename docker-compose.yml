@@ -150,10 +150,11 @@ services:
       - regnant-observe
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3",
-        ]
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/localhost/9000
+          && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3
+          && grep -q '200 OK' <&3
       <<: *healthcheck-defaults
     mem_limit: 1g
     cpus: 1.0
