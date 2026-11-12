@@ -276,7 +276,7 @@ services:
     user: "472:472"
 
   loki:
-    image: grafana/loki:3.3.1
+    image: grafana/loki:3.7.9
     container_name: regnant-loki
     <<: [*common-restart, *common-logging]
     command: ["-config.file=/etc/loki/config.yaml"]
@@ -287,10 +287,6 @@ services:
       - "3100:3100"
     networks:
       - regnant-observe
-    healthcheck:
-      test:
-        ["CMD-SHELL", "wget -q --spider http://localhost:3100/ready || exit 1"]
-      <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0
     security_opt:
@@ -298,7 +294,7 @@ services:
     user: "10001:10001"
 
   tempo:
-    image: grafana/tempo:2.6.1
+    image: grafana/tempo:3.1.1
     container_name: regnant-tempo
     <<: [*common-restart, *common-logging]
     command: ["-config.file=/etc/tempo/config.yaml"]
@@ -311,8 +307,7 @@ services:
     networks:
       - regnant-observe
     healthcheck:
-      test:
-        ["CMD-SHELL", "wget -q --spider http://localhost:3200/ready || exit 1"]
+      test: ["CMD", "/tempo", "-health"]
       <<: *healthcheck-defaults
     mem_limit: 512m
     cpus: 1.0

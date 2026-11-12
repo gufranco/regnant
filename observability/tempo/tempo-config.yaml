@@ -12,11 +12,14 @@ distributor:
         http:
           endpoint: 0.0.0.0:4318
 
-ingester:
-  trace_idle_period: 10s
-  max_block_duration: 5m
+backend_scheduler:
+  provider:
+    compaction:
+      compaction:
+        block_retention: 168h
+        compacted_block_retention: 1h
 
-compactor:
+backend_worker:
   compaction:
     block_retention: 168h
     compacted_block_retention: 1h
