@@ -21,7 +21,7 @@ env:
 jobs:
   iac-validate:
     name: ${{ matrix.cli }} validate
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +88,7 @@ jobs:
 
   e2e-stack:
     name: end-to-end stack
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: iac-validate
     steps:
       - uses: actions/checkout@v7
@@ -141,7 +141,7 @@ jobs:
 
   discover:
     name: discover language manifests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       has_python: ${{ steps.scan.outputs.has_python }}
       has_rust: ${{ steps.scan.outputs.has_rust }}
@@ -165,7 +165,7 @@ jobs:
 
   python-test:
     name: python tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: discover
     if: needs.discover.outputs.has_python == 'true'
     steps:
@@ -186,7 +186,7 @@ jobs:
 
   rust-test:
     name: rust tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: discover
     if: needs.discover.outputs.has_rust == 'true'
     steps:
@@ -221,7 +221,7 @@ jobs:
 
   terratest:
     name: terratest
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [iac-validate, discover]
     if: needs.discover.outputs.has_go == 'true'
     services:
