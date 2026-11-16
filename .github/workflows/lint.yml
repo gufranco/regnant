@@ -21,7 +21,7 @@ env:
 jobs:
   pre-commit:
     name: pre-commit (all hooks)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -62,7 +62,7 @@ jobs:
 
   terraform-fmt:
     name: opentofu/terraform fmt
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: opentofu/setup-opentofu@v2
@@ -77,7 +77,7 @@ jobs:
 
   shell:
     name: shellcheck
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: ludeeus/action-shellcheck@2.0.0
@@ -86,14 +86,14 @@ jobs:
 
   actions:
     name: actionlint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: raven-actions/actionlint@v2
 
   hadolint:
     name: hadolint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: hadolint/hadolint-action@v3.5.0
@@ -103,7 +103,7 @@ jobs:
 
   yaml:
     name: yamllint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - run: pipx install yamllint
@@ -111,7 +111,7 @@ jobs:
 
   discover:
     name: discover language manifests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       has_python: ${{ steps.scan.outputs.has_python }}
       has_rust: ${{ steps.scan.outputs.has_rust }}
@@ -135,7 +135,7 @@ jobs:
 
   python-lint:
     name: python (ruff + mypy + pip-audit)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: discover
     if: needs.discover.outputs.has_python == 'true'
     steps:
@@ -156,7 +156,7 @@ jobs:
 
   rust-lint:
     name: rust (clippy + cargo-deny)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: discover
     if: needs.discover.outputs.has_rust == 'true'
     steps:
@@ -192,7 +192,7 @@ jobs:
 
   go-lint:
     name: go (vet + govulncheck)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: discover
     if: needs.discover.outputs.has_go == 'true'
     steps:
