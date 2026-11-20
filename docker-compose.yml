@@ -276,7 +276,7 @@ services:
     user: "472:472"
 
   loki:
-    image: grafana/loki:3.7.9
+    image: grafana/loki:3.7.10
     container_name: regnant-loki
     <<: [*common-restart, *common-logging]
     command: ["-config.file=/etc/loki/config.yaml"]
